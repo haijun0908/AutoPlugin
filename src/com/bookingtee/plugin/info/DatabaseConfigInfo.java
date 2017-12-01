@@ -99,6 +99,8 @@ public class DatabaseConfigInfo implements Serializable {
                 for (DatabaseConfigInfo info : databaseConfigInfos) {
                     list.add(info);
                 }
+
+
             }
         }
         return list;
