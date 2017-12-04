@@ -15,7 +15,7 @@ public abstract class CcCircle22DTOBase implements Serializable {
     /**
      * zhujianid
      */
-    private Date d;
+    private Date createTime;
 
     public void setId(int id) {
         this.id = id;
@@ -25,12 +25,12 @@ public abstract class CcCircle22DTOBase implements Serializable {
         return this.id;
     }
 
-    public void setD(Date d) {
-        this.d = d;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
-    public Date getD() {
-        return this.d;
+    public Date getCreateTime() {
+        return this.createTime;
     }
 
 }

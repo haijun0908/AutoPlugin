@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.plugin.auto.out.dto.CcCircle22DTO;
+import com.plugin.auto.out.model.CcCircle22Model;
 import com.plugin.auto.out.service.CcCircle22Service;
 
 public class CcCircle22ServiceImpl implements CcCircle22Service {

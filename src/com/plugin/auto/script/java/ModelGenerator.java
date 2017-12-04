@@ -112,7 +112,7 @@ public class ModelGenerator extends JavaGenerator {
         ColumnInfo ci3 = new ColumnInfo();
         ci3.setType("date");
         ci3.setPrimaryKey(false);
-        ci3.setField("d");
+        ci3.setField("createTime");
         ci3.setComment("zhujianid");
         ci3.setDefaultVal(22);
         columnInfoList.add(ci3);
