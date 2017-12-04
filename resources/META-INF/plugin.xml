@@ -26,10 +26,10 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
-        <toolWindow id="AutoPlugin" anchor="right" factoryClass="com.bookingtee.plugin.PluginToolWindow">
+        <toolWindow id="AutoPlugin" anchor="right" factoryClass="com.plugin.auto.PluginToolWindow">
         </toolWindow>
 
-        <applicationConfigurable id="AutoPlugin" instance="com.bookingtee.plugin.config.SettingUI">
+        <applicationConfigurable id="AutoPlugin" instance="com.plugin.auto.config.SettingUI">
         </applicationConfigurable>
     </extensions>
 
