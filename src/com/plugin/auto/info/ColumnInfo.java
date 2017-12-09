@@ -1,11 +1,34 @@
 package com.plugin.auto.info;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ColumnInfo {
     private String field;
     private String type;
     private boolean isPrimaryKey;
     private Object defaultVal;
     private String comment;
+    private boolean isAutoIncrement;
+    private String customField;
+
+    public boolean isAutoIncrement() {
+        return isAutoIncrement;
+    }
+
+    public void setAutoIncrement(boolean autoIncrement) {
+        isAutoIncrement = autoIncrement;
+    }
+
+    public String getCustomField() {
+        if(StringUtils.isBlank(customField)){
+            return field;
+        }
+        return customField;
+    }
+
+    public void setCustomField(String customField) {
+        this.customField = customField;
+    }
 
     public String getField() {
         return field;

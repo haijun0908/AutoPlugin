@@ -8,7 +8,7 @@ public class JavaFile {
     private String packagePath;
     private List<String> importList;
     private boolean isAbstract = false;
-    private String fileAnno;
+    private String fileComment;
     private FileType fileType;
 
     private String parentClass;
@@ -56,12 +56,12 @@ public class JavaFile {
         isAbstract = anAbstract;
     }
 
-    public String getFileAnno() {
-        return fileAnno;
+    public String getFileComment() {
+        return fileComment;
     }
 
-    public void setFileAnno(String fileAnno) {
-        this.fileAnno = fileAnno;
+    public void setFileComment(String fileComment) {
+        this.fileComment = fileComment;
     }
 
     public FileType getFileType() {

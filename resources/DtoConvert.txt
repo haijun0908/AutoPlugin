@@ -1,0 +1,21 @@
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.List;
+
+public class DtoConvert {
+    static Gson gson = new Gson();
+
+    private DtoConvert() {
+    }
+
+    public static <T> T convert(Object val, Class<T> clazz) {
+        return gson.fromJson(gson.toJson(val), clazz);
+    }
+
+    public static <T> List<T> convert2List(List valList , Class<T> clazz){
+        return gson.fromJson(gson.toJson(valList) , new TypeToken<T>(){}.getType());
+    }
+
+}

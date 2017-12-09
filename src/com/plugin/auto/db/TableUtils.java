@@ -47,7 +47,7 @@ public class TableUtils {
     private void descTable() {
         try {
             if (tableInfoList != null && tableInfoList.size() > 0) {
-                String sql = "select TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,DATA_TYPE,COLUMN_KEY,COLUMN_COMMENT from information_schema.columns where table_schema = '" + this.dbName + "'";
+                String sql = "select TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,DATA_TYPE,COLUMN_KEY,COLUMN_COMMENT,EXTRA from information_schema.columns where table_schema = '" + this.dbName + "'";
                 PreparedStatement ps = dbHelper.getPreparedStatement(sql);
                 ResultSet rs = ps.executeQuery();
                 Map<String, List<ColumnInfo>> columnMap = new HashMap<>();
@@ -65,6 +65,8 @@ public class TableUtils {
                     info.setPrimaryKey("PRI".equals(rs.getString("COLUMN_KEY")));
                     info.setType(rs.getString("DATA_TYPE"));
                     info.setDefaultVal(rs.getObject("COLUMN_DEFAULT"));
+                    info.setAutoIncrement("auto_increment".equals(rs.getString("EXTRA")));
+                    info.setCustomField(info.getField());
                     columnInfoList.add(info);
 
                     columnMap.put(tableName , columnInfoList);

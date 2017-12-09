@@ -1,12 +1,13 @@
 package com.plugin.auto.script.java;
 
+import com.plugin.auto.common.WriteJavaFileListener;
 import com.plugin.auto.info.*;
 import com.plugin.auto.script.BaseGenerator;
 import com.plugin.auto.utils.JavaFileOut;
 
 import java.util.List;
 
-public abstract class JavaGenerator extends BaseGenerator {
+public abstract class JavaGenerator extends BaseGenerator implements WriteJavaFileListener {
     public JavaGenerator(DatabaseConfigInfo configInfo, List<TableInfo> tableInfoList) {
         super(configInfo, tableInfoList);
     }
@@ -30,7 +31,7 @@ public abstract class JavaGenerator extends BaseGenerator {
     protected abstract String getFileName();
     protected abstract List<String> getImportList();
     protected abstract boolean isAbstract();
-    protected abstract String getFileAnno();
+    protected abstract String getFileComment();
     protected abstract JavaFile.FileType getFileType();
     protected abstract String getParentClass();
     protected abstract List<String> getImplClassList();
@@ -44,24 +45,54 @@ public abstract class JavaGenerator extends BaseGenerator {
         for (int i = 0; i < times; i++) {
             resetCurrentTime(i + 1, currentTable);
             JavaFile file = new JavaFile();
-            file.setWriteFilePath("/Users/Jun/Documents/idea_workspace/AutoPlugin/OutFile/src/");
+            file.setWriteFilePath(configInfo.getWriteFilePath());
             file.setFileName(getFileName());
             file.setPackagePath(configInfo.getPackagePath() + "." + getSubPackage());
             file.setImportList(getImportList());
             file.setAbstract(isAbstract());
-            file.setFileAnno(getFileAnno());
+            file.setFileComment(getFileComment());
             file.setFileType(getFileType());
             file.setParentClass(getParentClass());
             file.setImplClassList(getImplClassList());
             file.setFieldList(getFieldList());
             file.setMethodList(getMethodList());
 
-            JavaFileOut.writeFile(file);
+            JavaFileOut.writeFile(file , this);
 
         }
     }
 
     public String getFullName(){
         return this.configInfo.getPackagePath() + "." + this.getSubPackage() + "." + this.getFileName();
+    }
+
+    @Override
+    public void aroundFile(Around around, JavaFile javaFile, StringBuilder sb) {
+
+    }
+
+    @Override
+    public void aroundPackage(Around around, JavaFile javaFile, StringBuilder sb) {
+
+    }
+
+    @Override
+    public void aroundImport(Around around, JavaFile javaFile, StringBuilder sb) {
+
+    }
+
+    @Override
+    public void aroundJavaName(Around around, JavaFile javaFile, StringBuilder sb) {
+
+    }
+
+    @Override
+    public void aroundJavaField(Around around, JavaFile javaFile, StringBuilder sb) {
+
+    }
+
+    @Override
+    public void aroundJavaMethod(Around around, JavaFile javaFile, StringBuilder sb) {
+
     }
 }

@@ -13,6 +13,11 @@ public class ServiceGenerator extends JavaGenerator {
     private boolean isImpl = false;
     private TableInfo tableInfo;
 
+    private MybatisDaoGenerator daoGenerator;
+    private DtoGenerator dtoGenerator;
+    private ModelGenerator modelGenerator;
+    private DTOConvertGenerator convertGenerator;
+
 
     public ServiceGenerator(DatabaseConfigInfo configInfo, List<TableInfo> tableInfoList) {
         super(configInfo, tableInfoList);
@@ -29,7 +34,16 @@ public class ServiceGenerator extends JavaGenerator {
         isImpl = currentTime == SERVICE_IMPL;
         this.tableInfo = tableInfo;
 
+        daoGenerator = new MybatisDaoGenerator(configInfo, Arrays.asList(tableInfo));
+        daoGenerator.resetCurrentTime(MybatisDaoGenerator.CHILD, tableInfo);
 
+        dtoGenerator = new DtoGenerator(configInfo, null);
+        dtoGenerator.resetCurrentTime(DtoGenerator.CHILD_TIME, tableInfo);
+
+        modelGenerator = new ModelGenerator(configInfo, null);
+        modelGenerator.resetCurrentTime(1, tableInfo);
+
+        convertGenerator = new DTOConvertGenerator(null, null);
     }
 
     @Override
@@ -47,19 +61,27 @@ public class ServiceGenerator extends JavaGenerator {
 
         importList.add("");
 
-        DtoGenerator dtoGenerator = new DtoGenerator(configInfo, null);
-        dtoGenerator.resetCurrentTime(2, tableInfo);
-        ModelGenerator modelGenerator = new ModelGenerator(configInfo, null);
-        modelGenerator.resetCurrentTime(1, tableInfo);
+
         importList.add(dtoGenerator.getFullName());
         importList.add(modelGenerator.getFullName());
 
         if (isImpl) {
+            importList.add("javax.annotation.Resource");
+            importList.add("java.util.HashMap");
             ServiceGenerator serviceGenerator = new ServiceGenerator(configInfo, null);
             serviceGenerator.resetCurrentTime(SERVICE, tableInfo);
             importList.add(serviceGenerator.getFullName());
-        }
 
+            MybatisDaoGenerator daoGenerator = new MybatisDaoGenerator(configInfo, Arrays.asList(tableInfo));
+            daoGenerator.resetCurrentTime(MybatisDaoGenerator.CHILD, tableInfo);
+            importList.add(daoGenerator.getFullName());
+
+
+            importList.add(configInfo.getPackagePath() + "." + convertGenerator.getSubPackage() + "." + convertGenerator.getJavaName());
+
+        } else {
+
+        }
 
 
         return importList;
@@ -71,7 +93,7 @@ public class ServiceGenerator extends JavaGenerator {
     }
 
     @Override
-    protected String getFileAnno() {
+    protected String getFileComment() {
         return null;
     }
 
@@ -87,23 +109,34 @@ public class ServiceGenerator extends JavaGenerator {
 
     @Override
     protected List<String> getImplClassList() {
+        List<String> list = new ArrayList<>();
         if (isImpl) {
-            return Arrays.asList(PluginUtils.javaName(tableInfo.getTableName(), true) + "Service");
+            list.add(PluginUtils.javaName(tableInfo.getTableName(), true) + "Service");
+        } else {
+
         }
-        return null;
+        return list;
     }
 
     @Override
     protected List<JavaFileField> getFieldList() {
-        return null;
+        List<JavaFileField> list = new ArrayList<>();
+        if (isImpl) {
+
+            list.add(new JavaFileField().access(JavaAccess.PRIVATE)
+                    .type(daoGenerator.getFileName())
+                    .field(PluginUtils.javaName(daoGenerator.getFileName(), false))
+                    .anno("Resource")
+            );
+        }
+        return list;
     }
 
     @Override
     protected List<JavaFileMethod> getMethodList() {
         String javaName = PluginUtils.javaName(tableInfo.getTableName(), true);
 
-        DtoGenerator dtoGenerator = new DtoGenerator(configInfo, null);
-        dtoGenerator.resetCurrentTime(DtoGenerator.CHILD_TIME, tableInfo);
+
         String dtoName = dtoGenerator.getFileName();
 
         String primaryKey = "PrimaryKey";
@@ -135,10 +168,9 @@ public class ServiceGenerator extends JavaGenerator {
         List<JavaFileMethod> methodList = new ArrayList<>();
         //save
         JavaFileMethod save = new JavaFileMethod();
-        save.returnType("int").method("save" + javaName).params(dtoName + " " + PluginUtils.lowerFirst(dtoName));
+        save.returnType("boolean").method("save" + javaName).params(dtoName + " " + PluginUtils.lowerFirst(dtoName));
         if (isImpl) {
-            //todo
-            save.body("return 0;");
+            save.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.saveName() + "(" + dto2Model() + ") > 0;");
         }
 
 
@@ -146,33 +178,29 @@ public class ServiceGenerator extends JavaGenerator {
         JavaFileMethod update = new JavaFileMethod();
         update.returnType("boolean").method("update" + javaName).params(dtoName + " " + PluginUtils.lowerFirst(dtoName));
         if (isImpl) {
-            //todo
-            update.body("return false;");
+            update.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.updateName() + "(" + dto2Model() + ");");
         }
 
 
         //delete
         JavaFileMethod delete = new JavaFileMethod();
         delete.returnType("boolean").method("deleteBy" + primaryKey).params(primaryParams);
-        if(isImpl){
-            //todo
-            delete.body("return false;");
+        if (isImpl) {
+            delete.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.deleteName() + "(" + PluginUtils.lowerFirst(primaryKey) + ");");
         }
 
         //get
         JavaFileMethod get = new JavaFileMethod();
         get.returnType(dtoName).method("get" + javaName + "By" + primaryKey).params(primaryParams);
-        if(isImpl){
-            //todo
-            get.body("return null;");
+        if (isImpl) {
+            get.body("return " + model2dto(PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getName() + "(" + PluginUtils.lowerFirst(primaryKey) + ")") + ";");
         }
 
         //getAll
         JavaFileMethod getAll = new JavaFileMethod();
-        getAll.returnType("List<"+dtoName+">").method("getAll");
-        if(isImpl){
-            //todo
-            getAll.body("return null;");
+        getAll.returnType("List<" + dtoName + ">").method("getAll");
+        if (isImpl) {
+            getAll.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getAllName() + "(), " + dtoGenerator.getFileName() + ".class);");
         }
 
         methodList.add(save);
@@ -181,21 +209,31 @@ public class ServiceGenerator extends JavaGenerator {
         methodList.add(get);
         methodList.add(getAll);
 
-        if(onePrimaryKey){
+        if (onePrimaryKey) {
 
             //list
             JavaFileMethod getList = new JavaFileMethod();
-            getList.returnType("List<"+dtoName+">").method("get" + javaName + "List").params("List<"+primaryReg.packageName+"> " + primaryList.get(0).getField() + "List");
-            if(isImpl){
-                getList.body("return null;");
+            getList.returnType("List<" + dtoName + ">").method("get" + javaName + "List").params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
+            if (isImpl) {
+                getList.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getListName() + "(" + primaryList.get(0).getField() + "List), " + dtoGenerator.getFileName() + ".class);");
             }
 
             //map
             JavaFileMethod map = new JavaFileMethod();
-            map.returnType("Map<"+primaryReg.packageName+", "+dtoName+">").method("get" + javaName + "MapBy" + primaryKey)
-                    .params("List<"+primaryReg.packageName+"> " + primaryList.get(0).getField() + "List");
-            if(isImpl){
-                map.body("return null;");
+            map.returnType("Map<" + primaryReg.packageName + ", " + dtoName + ">").method("get" + javaName + "MapBy" + primaryKey)
+                    .params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
+            if (isImpl) {
+                StringBuilder body = new StringBuilder();
+                body.append("List<").append(dtoName).append("> list = get").append(javaName).append("List(").append(primaryList.get(0).getField()).append("List);").append("\n");
+                body.append("    if (list != null && list.size() > 0) {").append("\n");
+                body.append("        Map<").append(primaryReg.packageName).append(", ").append(dtoName).append("> map = new HashMap<>();").append("\n");
+                body.append("        for (").append(dtoName).append(" dto : list) {").append("\n");
+                body.append("            map.put(dto." + "get").append(PluginUtils.javaName(primaryList.get(0).getField(), true)).append("(), dto);").append("\n");
+                body.append("        }").append("\n");
+                body.append("        return map;").append("\n");
+                body.append("    }").append("\n");
+                body.append("    return null;").append("\n");
+                map.body(body.toString());
             }
 
             methodList.add(getList);
@@ -203,13 +241,28 @@ public class ServiceGenerator extends JavaGenerator {
         }
 
 
-
-
         return methodList;
+    }
+
+    private String dto2Model() {
+        return convertGenerator.getJavaName() + ".convert(" + PluginUtils.lowerFirst(dtoGenerator.getFileName()) + ", " + modelGenerator.getFileName() + ".class)";
+    }
+
+    private String model2dto(String model) {
+        return convertGenerator.getJavaName() + ".convert(" + model + ", " + dtoGenerator.getFileName() + ".class)";
     }
 
     @Override
     protected String getSubPackage() {
         return "service" + (isImpl ? ".impl" : "");
+    }
+
+    @Override
+    public void aroundFile(Around around, JavaFile javaFile, StringBuilder sb) {
+        super.aroundFile(around, javaFile, sb);
+        if (around == Around.after && isImpl) {
+            //copy
+            new DTOConvertGenerator(configInfo.getWriteFilePath(), configInfo.getPackagePath()).generator();
+        }
     }
 }

@@ -25,7 +25,15 @@ public class DatabaseConfigInfo implements Serializable {
     private String db;
 
     private String packagePath;
+    private String writeFilePath;
 
+    public String getWriteFilePath() {
+        return writeFilePath;
+    }
+
+    public void setWriteFilePath(String writeFilePath) {
+        this.writeFilePath = writeFilePath;
+    }
 
     public String getName() {
         return name;

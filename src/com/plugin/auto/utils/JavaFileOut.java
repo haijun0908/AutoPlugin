@@ -1,6 +1,7 @@
 package com.plugin.auto.utils;
 
 import com.intellij.openapi.util.io.FileUtil;
+import com.plugin.auto.common.WriteJavaFileListener;
 import com.plugin.auto.info.JavaFile;
 import com.plugin.auto.info.JavaFileField;
 import com.plugin.auto.info.JavaFileMethod;
@@ -13,7 +14,7 @@ public class JavaFileOut {
     private static StringBuilder sb;
     private static String SPACE = " ";
 
-    public static void writeFile(JavaFile javaFile) {
+    public static void writeFile(JavaFile javaFile , WriteJavaFileListener listener) {
         sb = new StringBuilder();
 
         File basePath = new File(javaFile.getWriteFilePath() + File.separator + javaFile.getPackagePath().replaceAll("[.]", File.separator));
@@ -21,12 +22,17 @@ public class JavaFileOut {
 
         File file = new File(basePath, javaFile.getFileName() + ".java");
         try {
+            if(listener != null) listener.aroundFile(WriteJavaFileListener.Around.before , javaFile , sb);
+
+            if(listener != null) listener.aroundPackage(WriteJavaFileListener.Around.before , javaFile , sb);
             //包名
             append("package " + javaFile.getPackagePath() + ";");
+            if(listener != null) listener.aroundPackage(WriteJavaFileListener.Around.after , javaFile , sb);
 
             appendLine();
 
             //依赖包
+            if(listener != null) listener.aroundImport(WriteJavaFileListener.Around.before , javaFile , sb);
             if (javaFile.getImportList() != null && javaFile.getImportList().size() > 0) {
                 for (String importVo : javaFile.getImportList()) {
                     if(StringUtils.isBlank(importVo)){
@@ -36,12 +42,14 @@ public class JavaFileOut {
                     }
                 }
             }
+            if(listener != null) listener.aroundImport(WriteJavaFileListener.Around.after , javaFile , sb);
             appendLine();
 
+            if(listener != null) listener.aroundJavaName(WriteJavaFileListener.Around.before , javaFile , sb);
             //文件名
-            if (StringUtils.isNotBlank(javaFile.getFileAnno())) {
+            if (StringUtils.isNotBlank(javaFile.getFileComment())) {
                 append("/**");
-                append(" * " + javaFile.getFileAnno());
+                append(" * " + javaFile.getFileComment());
                 append(" */");
             }
             String fileName = "public" + (javaFile.isAbstract() ? (SPACE + "abstract") : "") + SPACE + javaFile.getFileType().getFileType() + SPACE;
@@ -58,9 +66,11 @@ public class JavaFileOut {
             }
             fileName += SPACE + "{";
             append(fileName);
+            if(listener != null) listener.aroundJavaName(WriteJavaFileListener.Around.after , javaFile , sb);
 
             appendLine();
 
+            if(listener != null) listener.aroundJavaField(WriteJavaFileListener.Around.before , javaFile , sb);
             //字段
             if (javaFile.getFieldList() != null && javaFile.getFieldList().size() > 0) {
                 for (JavaFileField field : javaFile.getFieldList()) {
@@ -68,7 +78,10 @@ public class JavaFileOut {
                     appendLine();
                 }
             }
+            if(listener != null) listener.aroundJavaField(WriteJavaFileListener.Around.after , javaFile , sb);
 
+
+            if(listener != null) listener.aroundJavaMethod(WriteJavaFileListener.Around.before , javaFile , sb);
             //方法
             if (javaFile.getMethodList() != null && javaFile.getMethodList().size() > 0) {
                 for (JavaFileMethod method : javaFile.getMethodList()) {
@@ -76,9 +89,11 @@ public class JavaFileOut {
                     appendLine();
                 }
             }
+            if(listener != null) listener.aroundJavaMethod(WriteJavaFileListener.Around.after , javaFile , sb);
 
             append("}");
             FileUtil.writeToFile(file, sb.toString());
+            if(listener != null) listener.aroundFile(WriteJavaFileListener.Around.after , javaFile , sb);
 
         } catch (Exception e) {
             e.printStackTrace();

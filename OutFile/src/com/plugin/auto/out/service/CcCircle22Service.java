@@ -8,7 +8,7 @@ import com.plugin.auto.out.model.CcCircle22Model;
 
 public interface CcCircle22Service {
 
-    public int saveCcCircle22(CcCircle22DTO ccCircle22DTO);
+    public boolean saveCcCircle22(CcCircle22DTO ccCircle22DTO);
 
     public boolean updateCcCircle22(CcCircle22DTO ccCircle22DTO);
 

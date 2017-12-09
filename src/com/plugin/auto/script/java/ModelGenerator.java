@@ -32,7 +32,7 @@ public class ModelGenerator extends JavaGenerator {
         for (ColumnInfo info : tableInfo.getColumnInfoList()) {
             PluginUtils.Reg reg = PluginUtils.reg(info);
             //field
-            fieldList.add(new JavaFileField().anno(info.getComment()).field(info.getField()).type(reg.type).access(JavaAccess.PRIVATE));
+            fieldList.add(new JavaFileField().comment(info.getComment()).field(info.getField()).type(reg.type).access(JavaAccess.PRIVATE));
             //setMethod
             methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("void").method("set" + PluginUtils.javaName(info.getField(), true))
                     .params(reg.type + " " + info.getField()).body("this." + info.getField() + " = " + info.getField() + ";")
@@ -63,7 +63,7 @@ public class ModelGenerator extends JavaGenerator {
     }
 
     @Override
-    protected String getFileAnno() {
+    protected String getFileComment() {
         return null;
     }
 
@@ -108,6 +108,7 @@ public class ModelGenerator extends JavaGenerator {
         ci.setField("id");
         ci.setComment("zhujianid");
         ci.setDefaultVal(22);
+        ci.setAutoIncrement(true);
         columnInfoList.add(ci);
         ColumnInfo ci3 = new ColumnInfo();
         ci3.setType("date");
@@ -120,10 +121,11 @@ public class ModelGenerator extends JavaGenerator {
 
         DatabaseConfigInfo configInfo = new DatabaseConfigInfo();
         configInfo.setPackagePath("com.plugin.auto.out");
+        configInfo.setWriteFilePath("/Users/Jun/Documents/idea_workspace/AutoPlugin/OutFile/src/");
 
         new DtoGenerator(configInfo, Arrays.asList(tableInfo)).startGeneratorList();
         new ModelGenerator(configInfo, Arrays.asList(tableInfo)).startGeneratorList();
         new ServiceGenerator(configInfo , Arrays.asList(tableInfo)).startGeneratorList();
-        new DaoGenerator(configInfo , Arrays.asList(tableInfo)).startGeneratorList();
+        new MybatisDaoGenerator(configInfo , Arrays.asList(tableInfo)).startGeneratorList();
     }
 }

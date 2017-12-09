@@ -2,6 +2,7 @@ package com.plugin.auto.utils;
 
 import com.plugin.auto.info.ColumnInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.ini4j.Reg;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,19 +10,7 @@ import java.util.regex.Pattern;
 
 public class PluginUtils {
 
-    public static class Reg {
-        public String reg;
-        public String type;
-        public String importClass;
-        public String packageName;
 
-        public Reg(String reg, String type, String importClass, String packageName) {
-            this.reg = reg;
-            this.type = type;
-            this.importClass = importClass;
-            this.packageName = packageName;
-        }
-    }
 
     private static List<Reg> regList = new ArrayList<>();
 
@@ -67,5 +56,18 @@ public class PluginUtils {
         return list;
     }
 
+    public static class Reg {
+        public String reg;
+        public String type;
+        public String importClass;
+        public String packageName;
+
+        public Reg(String reg, String type, String importClass, String packageName) {
+            this.reg = reg;
+            this.type = type;
+            this.importClass = importClass;
+            this.packageName = packageName;
+        }
+    }
 
 }

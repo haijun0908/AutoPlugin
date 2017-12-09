@@ -1,5 +1,6 @@
 package com.plugin.auto.script.java;
 
+import com.plugin.auto.common.WriteJavaFileListener;
 import com.plugin.auto.info.*;
 import com.plugin.auto.utils.PluginUtils;
 
@@ -61,7 +62,7 @@ public class DaoGenerator extends JavaGenerator {
     }
 
     @Override
-    protected String getFileAnno() {
+    protected String getFileComment() {
         return null;
     }
 
@@ -94,5 +95,14 @@ public class DaoGenerator extends JavaGenerator {
     @Override
     protected String getSubPackage() {
         return "dao" + (isBase ? ".base" : "");
+    }
+
+    @Override
+    public void aroundFile(Around around, JavaFile javaFile, StringBuilder sb) {
+        super.aroundFile(around, javaFile, sb);
+        if(around == Around.after && isBase){
+            //dao结束后需要生成mapper
+            new MapperGenerator(configInfo , tableInfo).generator();
+        }
     }
 }

@@ -8,7 +8,7 @@ public class JavaFileMethod {
     private String params;
     private String body;
     private JavaAccess access = JavaAccess.PUBLIC;
-    private String anno;
+    private String comment;
 
     public JavaFileMethod returnType(String returnType) {
         this.returnType = returnType;
@@ -36,17 +36,17 @@ public class JavaFileMethod {
     }
 
 
-    public JavaFileMethod anno(String anno) {
-        this.anno = anno;
+    public JavaFileMethod comment(String comment) {
+        this.comment = comment;
         return this;
     }
 
     public String getCode() {
         String code = "";
 
-        if (StringUtils.isNotBlank(this.anno)) {
+        if (StringUtils.isNotBlank(this.comment)) {
             code += "/**\n";
-            code += " * " + this.anno + "\n";
+            code += " * " + this.comment + "\n";
             code += " */";
         }
         code += this.access.getAccess() + " " + this.returnType + " " + this.method;

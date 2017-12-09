@@ -38,7 +38,7 @@ public class DtoGenerator extends JavaGenerator {
             for (ColumnInfo info : tableInfo.getColumnInfoList()) {
                 PluginUtils.Reg reg = PluginUtils.reg(info);
                 //field
-                fieldList.add(new JavaFileField().anno(info.getComment()).field(info.getField()).type(reg.type).access(JavaAccess.PRIVATE));
+                fieldList.add(new JavaFileField().comment(info.getComment()).field(info.getField()).type(reg.type).access(JavaAccess.PRIVATE));
                 //setMethod
                 methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("void").method("set" + PluginUtils.javaName(info.getField(), true))
                         .params(reg.type + " " + info.getField()).body("this." + info.getField() + " = " + info.getField() + ";")
@@ -78,7 +78,7 @@ public class DtoGenerator extends JavaGenerator {
     }
 
     @Override
-    protected String getFileAnno() {
+    protected String getFileComment() {
         return tableInfo.getComment();
     }
 

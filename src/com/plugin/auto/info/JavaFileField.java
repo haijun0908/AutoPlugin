@@ -5,10 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 public class JavaFileField {
     private String type;
     private String field;
-    private String anno;
+    private String comment;
     private JavaAccess access;
     private String defaultVal;
     private String modifier;
+    private String anno;
+
 
     public JavaFileField type(String type) {
         this.type = type;
@@ -20,8 +22,8 @@ public class JavaFileField {
         return this;
     }
 
-    public JavaFileField anno(String anno) {
-        this.anno = anno;
+    public JavaFileField comment(String comment) {
+        this.comment = comment;
         return this;
     }
 
@@ -42,24 +44,31 @@ public class JavaFileField {
         return this;
     }
 
-    public String getCode(){
+    public String getCode() {
         String code = "";
-        if(StringUtils.isNotBlank(this.anno)){
+        if (StringUtils.isNotBlank(this.comment)) {
             code += "/**\n";
-            code += " * " + this.anno + "\n";
+            code += " * " + this.comment + "\n";
             code += " */\n";
         }
-        code += this.access.getAccess() + " " ;
-        if(StringUtils.isNotBlank(this.modifier)){
+        if(StringUtils.isNotBlank(anno)){
+            code += "@" + anno + "\n";
+        }
+        code += this.access.getAccess() + " ";
+        if (StringUtils.isNotBlank(this.modifier)) {
             code += this.modifier + " ";
         }
         code += this.type + " " + this.field;
 
-        if(StringUtils.isNotBlank(this.defaultVal)){
+        if (StringUtils.isNotBlank(this.defaultVal)) {
             code += " = " + this.defaultVal;
         }
         code += ";";
         return code;
     }
 
+    public JavaFileField anno(String anno) {
+        this.anno = anno;
+        return this;
+    }
 }
