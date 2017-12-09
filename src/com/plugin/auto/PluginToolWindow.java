@@ -11,6 +11,8 @@ import com.plugin.auto.info.TableInfo;
 import com.plugin.auto.menu.TableRightMenu;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
@@ -36,8 +38,6 @@ public class PluginToolWindow implements ToolWindowFactory {
     private DatabaseConfigInfo selectConfigInfo;
 
     public PluginToolWindow() {
-        configInfoList = DatabaseConfigInfo.getExistList();
-        configInfoList.add(0, null);
         configBtn.addActionListener(e -> {
         });
         connectBtn.addActionListener(e -> {
@@ -49,15 +49,34 @@ public class PluginToolWindow implements ToolWindowFactory {
 
         });
         selectList.addActionListener(e -> notifyBtnStatus());
-        if (configInfoList != null && configInfoList.size() > 0) {
-            for (int i = 0; i < configInfoList.size(); i++) {
-                if (configInfoList.get(i) != null) {
-                    selectList.addItem(configInfoList.get(i).getName());
-                } else {
-                    selectList.addItem(null);
+
+        selectList.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                selectList.removeAllItems();
+                configInfoList = DatabaseConfigInfo.getExistList();
+                configInfoList.add(0, null);
+                if (configInfoList != null && configInfoList.size() > 0) {
+                    for (int i = 0; i < configInfoList.size(); i++) {
+                        if (configInfoList.get(i) != null) {
+                            selectList.addItem(configInfoList.get(i).getName());
+                        } else {
+                            selectList.addItem(null);
+                        }
+                    }
                 }
             }
-        }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+
+            }
+        });
     }
 
     /**

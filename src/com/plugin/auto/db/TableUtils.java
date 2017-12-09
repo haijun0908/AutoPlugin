@@ -34,6 +34,7 @@ public class TableUtils {
                 String tableName = rs.getString(1);
                 TableInfo tableInfo = new TableInfo();
                 tableInfo.setTableName(tableName);
+                tableInfo.setOriginTableName(tableName);
                 tableInfoList.add(tableInfo);
             }
             descTable();

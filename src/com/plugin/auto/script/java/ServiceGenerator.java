@@ -141,6 +141,7 @@ public class ServiceGenerator extends JavaGenerator {
 
         String primaryKey = "PrimaryKey";
         String primaryParams = "";
+        String primaryObjs = "";
         List<ColumnInfo> primaryList = tableInfo.getPrimaryColumns();
 
         boolean onePrimaryKey = false;
@@ -154,12 +155,16 @@ public class ServiceGenerator extends JavaGenerator {
                 String field = primaryList.get(0).getField();
                 primaryKey = PluginUtils.javaName(field, true);
                 primaryParams = primaryReg.type + " " + PluginUtils.lowerFirst(primaryKey);
+                primaryObjs = PluginUtils.lowerFirst(primaryKey);
             } else {
                 for (ColumnInfo columnInfo : primaryList) {
                     primaryParams += PluginUtils.reg(columnInfo).type + " " + PluginUtils.javaName(columnInfo.getField(), false);
-                    primaryParams += " , ";
+                    primaryParams += ", ";
+                    primaryObjs += PluginUtils.javaName(columnInfo.getField(), false);
+                    primaryObjs += ", ";
                 }
                 primaryParams = primaryParams.substring(0, primaryParams.length() - 2);
+                primaryObjs = primaryObjs.substring(0, primaryObjs.length() - 2);
             }
 
         }
@@ -186,14 +191,14 @@ public class ServiceGenerator extends JavaGenerator {
         JavaFileMethod delete = new JavaFileMethod();
         delete.returnType("boolean").method("deleteBy" + primaryKey).params(primaryParams);
         if (isImpl) {
-            delete.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.deleteName() + "(" + PluginUtils.lowerFirst(primaryKey) + ");");
+            delete.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.deleteName() + "(" + primaryObjs + ");");
         }
 
         //get
         JavaFileMethod get = new JavaFileMethod();
         get.returnType(dtoName).method("get" + javaName + "By" + primaryKey).params(primaryParams);
         if (isImpl) {
-            get.body("return " + model2dto(PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getName() + "(" + PluginUtils.lowerFirst(primaryKey) + ")") + ";");
+            get.body("return " + model2dto(PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getName() + "(" + primaryObjs + ")") + ";");
         }
 
         //getAll
@@ -223,17 +228,16 @@ public class ServiceGenerator extends JavaGenerator {
             map.returnType("Map<" + primaryReg.packageName + ", " + dtoName + ">").method("get" + javaName + "MapBy" + primaryKey)
                     .params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
             if (isImpl) {
-                StringBuilder body = new StringBuilder();
-                body.append("List<").append(dtoName).append("> list = get").append(javaName).append("List(").append(primaryList.get(0).getField()).append("List);").append("\n");
-                body.append("    if (list != null && list.size() > 0) {").append("\n");
-                body.append("        Map<").append(primaryReg.packageName).append(", ").append(dtoName).append("> map = new HashMap<>();").append("\n");
-                body.append("        for (").append(dtoName).append(" dto : list) {").append("\n");
-                body.append("            map.put(dto." + "get").append(PluginUtils.javaName(primaryList.get(0).getField(), true)).append("(), dto);").append("\n");
-                body.append("        }").append("\n");
-                body.append("        return map;").append("\n");
-                body.append("    }").append("\n");
-                body.append("    return null;").append("\n");
-                map.body(body.toString());
+                String body = "List<" + dtoName + "> list = get" + javaName + "List(" + primaryList.get(0).getField() + "List);" + "\n" +
+                        "    if (list != null && list.size() > 0) {" + "\n" +
+                        "        Map<" + primaryReg.packageName + ", " + dtoName + "> map = new HashMap<>();" + "\n" +
+                        "        for (" + dtoName + " dto : list) {" + "\n" +
+                        "            map.put(dto." + "get" + PluginUtils.javaName(primaryList.get(0).getField(), true) + "(), dto);" + "\n" +
+                        "        }" + "\n" +
+                        "        return map;" + "\n" +
+                        "    }" + "\n" +
+                        "    return null;" + "\n";
+                map.body(body);
             }
 
             methodList.add(getList);

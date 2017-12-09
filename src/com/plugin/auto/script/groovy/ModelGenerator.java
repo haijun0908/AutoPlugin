@@ -22,6 +22,7 @@ public class ModelGenerator extends GroovyGenerator {
     public static void main(String[] args){
         TableInfo tableInfo = new TableInfo();
         tableInfo.setTableName("cc_circle22");
+        tableInfo.setOriginTableName("cc_circle22");
         List<ColumnInfo> columnInfoList = new ArrayList<>();
         ColumnInfo ci = new ColumnInfo();
         ci.setType("int");

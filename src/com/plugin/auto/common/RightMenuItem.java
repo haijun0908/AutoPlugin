@@ -1,17 +1,17 @@
 package com.plugin.auto.common;
 
 import com.plugin.auto.script.BaseGenerator;
-import com.plugin.auto.script.groovy.DaoGenerator;
-import com.plugin.auto.script.groovy.DtoGenerator;
-import com.plugin.auto.script.groovy.ModelGenerator;
-import com.plugin.auto.script.groovy.ServiceGenerator;
+import com.plugin.auto.script.java.DtoGenerator;
+import com.plugin.auto.script.java.ModelGenerator;
+import com.plugin.auto.script.java.MybatisDaoGenerator;
+import com.plugin.auto.script.java.ServiceGenerator;
 
 public enum RightMenuItem {
 
     ALL("ALL", "", null),
     NULL("-----------", "", null),
     MODEL("Model", "", ModelGenerator.class),
-    DAO("Dao", "", DaoGenerator.class),
+    DAO("Dao", "", MybatisDaoGenerator.class),
     SERVICE("Service", "", ServiceGenerator.class),
     DTO("Dto", "", DtoGenerator.class);
 

@@ -15,6 +15,15 @@ public class TableInfo {
     private String tableName;
     private List<ColumnInfo> columnInfoList;
     private String comment;
+    private String originTableName;
+
+    public String getOriginTableName() {
+        return originTableName;
+    }
+
+    public void setOriginTableName(String originTableName) {
+        this.originTableName = originTableName;
+    }
 
     private List<ColumnInfo> primaryColumns;
 
@@ -54,13 +63,13 @@ public class TableInfo {
     }
 
     public ColumnInfo getAutoIncrementColumn() {
-        if(columnInfoList == null || columnInfoList.size() <= 0){
+        if (columnInfoList == null || columnInfoList.size() <= 0) {
             return null;
         }
         return columnInfoList.stream().filter(ColumnInfo::isAutoIncrement).findFirst().orElse(null);
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         List<Integer> list = new ArrayList<>();
         list.add(1);
         list.add(2);

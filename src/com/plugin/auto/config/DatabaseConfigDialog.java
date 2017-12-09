@@ -13,6 +13,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileWriter;
 
 public class DatabaseConfigDialog extends DialogWrapper {
     private static final long serialVersionUID = -317495679511983280L;
@@ -25,6 +27,9 @@ public class DatabaseConfigDialog extends DialogWrapper {
     private JTextField user;
     private JTextField password;
     private JTextField db;
+    private JButton openButton;
+    private JTextField packageName;
+    private JLabel folder;
 
     private DatabaseConfigInfo configInfo;
     private DialogConfirmCallback<DatabaseConfigInfo> callback;
@@ -51,6 +56,8 @@ public class DatabaseConfigDialog extends DialogWrapper {
             password.setText(configInfo.getPwd());
             db.setText(configInfo.getDb());
             name.setEnabled(false);
+            folder.setText(configInfo.getWriteFilePath());
+            packageName.setText(configInfo.getPackagePath());
         }
     }
 
@@ -68,33 +75,44 @@ public class DatabaseConfigDialog extends DialogWrapper {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
-        buttonOK.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onOK();
-            }
-        });
+        buttonOK.addActionListener(e -> onOK());
 
-        buttonCancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
+        buttonCancel.addActionListener(e -> onCancel());
+
+        openButton.addActionListener(e -> {
+            JFileChooser jf = new JFileChooser();
+            jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            jf.setAcceptAllFileFilterUsed(false);
+            if(StringUtils.isNotBlank(folder.getText())){
+                jf.setCurrentDirectory(new File(folder.getText()));
+            }
+            int status = jf.showDialog(null, "确定");
+            if(status == JFileChooser.APPROVE_OPTION){
+                File fi = jf.getSelectedFile();
+                if (fi != null) {
+                    if (fi.isFile()) {
+                        folder.setText(fi.getParentFile().getPath());
+                    } else {
+                        if(!fi.exists()){
+                            fi = fi.getParentFile();
+                        }
+                        folder.setText(fi.getPath());
+                    }
+                }
             }
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                onCancel();
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
     private void onOK() {
-        if (StringUtils.isAnyBlank(name.getText(), host.getText(), port.getText(), user.getText(), password.getText() , db.getText())) {
+        if (StringUtils.isAnyBlank(name.getText(), host.getText(), port.getText(), user.getText(), password.getText(), db.getText(), folder.getText(), packageName.getText())) {
             Messages.showMessageDialog("请输入完整的信息", "Error", Messages.getInformationIcon());
             return;
         }
 
-        if(configInfo == null){
+        if (configInfo == null) {
             configInfo = new DatabaseConfigInfo();
         }
 
@@ -104,8 +122,10 @@ public class DatabaseConfigDialog extends DialogWrapper {
         configInfo.setUser(user.getText());
         configInfo.setPwd(password.getText());
         configInfo.setName(name.getText());
+        configInfo.setWriteFilePath(folder.getText());
+        configInfo.setPackagePath(packageName.getText());
 
-        callback.confirm(this , configInfo);
+        callback.confirm(this, configInfo);
 
         dispose();
 

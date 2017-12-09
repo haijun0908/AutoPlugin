@@ -30,7 +30,7 @@ public class MapperGenerator {
         this.configInfo = configInfo;
         this.tableInfo = tableInfo;
         daoGenerator = new MybatisDaoGenerator(configInfo, Arrays.asList(tableInfo));
-        daoGenerator.resetCurrentTime(DaoGenerator.PARENT, tableInfo);
+        daoGenerator.resetCurrentTime(DaoGenerator.CHILD, tableInfo);
     }
 
     public void generator() {
@@ -38,8 +38,7 @@ public class MapperGenerator {
         mapper.namespace(getDaoName());
         List<MapperBase> elementList = new ArrayList<>();
 
-        //todo
-        elementList.add(new MapperSql().id("table").value(tableInfo.getTableName()));
+        elementList.add(new MapperSql().id("table").value(tableInfo.getOriginTableName()));
         elementList.add(new MapperSql().id("fields").value(getAllFieldStr(false, false)));
 
         MapperResultMap resultMap = new MapperResultMap();
@@ -136,7 +135,7 @@ public class MapperGenerator {
 
     private String getAllFieldStr(boolean skipAutoIncrementKey, boolean skipPrimaryKey, String before, String after, String delimiter) {
         return tableInfo.getColumnInfoList().stream()
-                .filter(columnInfo -> !(skipAutoIncrementKey && columnInfo.isAutoIncrement()) || !(skipPrimaryKey && columnInfo.isPrimaryKey()))
+                .filter(columnInfo -> !(skipAutoIncrementKey && columnInfo.isAutoIncrement()) && !(skipPrimaryKey && columnInfo.isPrimaryKey()))
                 .map(columnInfo -> before + columnInfo.getCustomField() + after).collect(Collectors.joining(delimiter));
     }
 
@@ -152,7 +151,7 @@ public class MapperGenerator {
 
     private String getTable() {
 //        return " <include refid=\"table\"/> ";
-        return tableInfo.getTableName();
+        return tableInfo.getOriginTableName();
     }
 
     private String getFields() {
