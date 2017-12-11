@@ -46,9 +46,9 @@ public class DaoGenerator extends JavaGenerator {
 
         importList.add(model.getFullName());
 
-        if(!isBase){
-            DaoGenerator dao = new DaoGenerator(configInfo , null);
-            dao.resetCurrentTime(PARENT , tableInfo);
+        if (!isBase) {
+            DaoGenerator dao = new DaoGenerator(configInfo, null);
+            dao.resetCurrentTime(PARENT, tableInfo);
             importList.add(dao.getFullName());
         }
 
@@ -98,11 +98,21 @@ public class DaoGenerator extends JavaGenerator {
     }
 
     @Override
+    protected String getAnno() {
+        return null;
+    }
+
+    @Override
     public void aroundFile(Around around, JavaFile javaFile, StringBuilder sb) {
         super.aroundFile(around, javaFile, sb);
-        if(around == Around.after && isBase){
+        if (around == Around.after && isBase) {
             //dao结束后需要生成mapper
-            new MapperGenerator(configInfo , tableInfo).generator();
+            new MapperGenerator(configInfo, tableInfo).generator();
         }
+    }
+
+    @Override
+    protected boolean getCanOverwrite() {
+        return false;
     }
 }

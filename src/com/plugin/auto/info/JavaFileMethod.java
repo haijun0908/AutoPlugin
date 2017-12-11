@@ -9,6 +9,9 @@ public class JavaFileMethod {
     private String body;
     private JavaAccess access = JavaAccess.PUBLIC;
     private String comment;
+    private String anno;
+
+
 
     public JavaFileMethod returnType(String returnType) {
         this.returnType = returnType;
@@ -49,6 +52,9 @@ public class JavaFileMethod {
             code += " * " + this.comment + "\n";
             code += " */";
         }
+        if(StringUtils.isNotBlank(this.anno)){
+            code += "@" + anno + "\n";
+        }
         code += this.access.getAccess() + " " + this.returnType + " " + this.method;
         if (StringUtils.isNotBlank(params)) {
             code += "(" + this.params + ")";
@@ -57,7 +63,8 @@ public class JavaFileMethod {
         }
         if (StringUtils.isNotBlank(this.body)) {
             code += " {\n";
-            code += "    " + this.body + "\n";
+//            code += "    " + this.body + "\n";
+            code = append(code , this.body , 1);
             code += "}";
         } else {
             code += ";";
@@ -66,4 +73,21 @@ public class JavaFileMethod {
         return code;
     }
 
+    private String append(String code , String content, int tabCount) {
+        String[] lines = content.split("\n");
+        String tab = "";
+        for (int i = 0; i < tabCount; i++) {
+            tab += "    ";
+        }
+        for (String line : lines) {
+//            sb.append(tab).append(line).append("\n");
+            code += tab + line + "\n";
+        }
+        return code;
+    }
+
+    public JavaFileMethod anno(String anno) {
+        this.anno = anno;
+        return this;
+    }
 }

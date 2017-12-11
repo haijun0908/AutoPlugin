@@ -185,6 +185,11 @@ public class MybatisDaoGenerator extends JavaGenerator {
         return "dao" + (isBase ? ".base" : "");
     }
 
+    @Override
+    protected String getAnno() {
+        return null;
+    }
+
 
     public String saveName() {
         return "save" + javaName;

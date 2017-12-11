@@ -38,6 +38,7 @@ public abstract class JavaGenerator extends BaseGenerator implements WriteJavaFi
     protected abstract List<JavaFileField> getFieldList();
     protected abstract List<JavaFileMethod> getMethodList();
     protected abstract String getSubPackage();
+    protected abstract String getAnno();
 
     @Override
     protected void generator() {
@@ -56,10 +57,16 @@ public abstract class JavaGenerator extends BaseGenerator implements WriteJavaFi
             file.setImplClassList(getImplClassList());
             file.setFieldList(getFieldList());
             file.setMethodList(getMethodList());
+            file.setAnno(getAnno());
+            file.setCanOverwrite(getCanOverwrite());
 
             JavaFileOut.writeFile(file , this);
 
         }
+    }
+
+    protected boolean getCanOverwrite() {
+        return true;
     }
 
     public String getFullName(){

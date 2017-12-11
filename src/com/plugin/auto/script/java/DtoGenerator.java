@@ -35,19 +35,35 @@ public class DtoGenerator extends JavaGenerator {
         //初始化一些数据
         if (isBase) {
             fieldList.add(new JavaFileField().access(JavaAccess.PRIVATE).type("long").field("serialVersionUID").defaultVal("-1L").modifier("static final"));
+
+
+//            sb.append("id=").append(id);
+//            sb.append(", name='").append(name).append('\'');
+//            sb.append(", createTime=").append(createTime);
+//            sb.append(", updateTime=").append(updateTime);
+//            sb.append(", memberId=").append(memberId);
+//            sb.append('}');
+//            return sb.toString();
+            String toStringBody = "StringBuffer sb = new StringBuffer(\"" + getFileName() + "{\");\n";
+            boolean isFirst = true;
             for (ColumnInfo info : tableInfo.getColumnInfoList()) {
                 PluginUtils.Reg reg = PluginUtils.reg(info);
                 //field
                 fieldList.add(new JavaFileField().comment(info.getComment()).field(info.getField()).type(reg.type).access(JavaAccess.PRIVATE));
                 //setMethod
-                methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("void").method("set" + PluginUtils.javaName(info.getField(), true))
+                methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("void").method("set" + PluginUtils.javaName(info.getCustomField(), true))
                         .params(reg.type + " " + info.getField()).body("this." + info.getField() + " = " + info.getField() + ";")
                 );
                 //getMethod
-                methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType(reg.type).method("get" + PluginUtils.javaName(info.getField(), true))
+                methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType(reg.type).method("get" + PluginUtils.javaName(info.getCustomField(), true))
                         .body("return this." + info.getField() + ";")
                 );
+                toStringBody += "sb.append(\"" + (isFirst ? "" : ",") + " " + PluginUtils.javaName(info.getCustomField(), false) + "=\").append(" + PluginUtils.javaName(info.getCustomField(), false) + ");\n";
+                isFirst = false;
             }
+            toStringBody += "sb.append('}');\n";
+            toStringBody += "return sb.toString();";
+            methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("String").method("toString").anno("Override").body(toStringBody));
         }
     }
 
@@ -110,5 +126,15 @@ public class DtoGenerator extends JavaGenerator {
     @Override
     protected String getSubPackage() {
         return "dto" + (isBase ? ".base" : "");
+    }
+
+    @Override
+    protected String getAnno() {
+        return null;
+    }
+
+    @Override
+    protected boolean getCanOverwrite() {
+        return isBase ? true : false;
     }
 }

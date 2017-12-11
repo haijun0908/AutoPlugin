@@ -22,6 +22,12 @@ public class JavaFileOut {
 
         File file = new File(basePath, javaFile.getFileName() + ".java");
         try {
+            if(!javaFile.isCanOverwrite() && file.exists() && file.isFile()){
+                //不允许重写。备份之前的文件
+                FileUtil.copy(file , new File(basePath , javaFile.getFileName() + ".java" + ".old"));
+            }
+
+
             if(listener != null) listener.aroundFile(WriteJavaFileListener.Around.before , javaFile , sb);
 
             if(listener != null) listener.aroundPackage(WriteJavaFileListener.Around.before , javaFile , sb);
@@ -51,6 +57,9 @@ public class JavaFileOut {
                 append("/**");
                 append(" * " + javaFile.getFileComment());
                 append(" */");
+            }
+            if(StringUtils.isNotBlank(javaFile.getAnno())){
+                append("@" + javaFile.getAnno());
             }
             String fileName = "public" + (javaFile.isAbstract() ? (SPACE + "abstract") : "") + SPACE + javaFile.getFileType().getFileType() + SPACE;
             fileName += javaFile.getFileName();

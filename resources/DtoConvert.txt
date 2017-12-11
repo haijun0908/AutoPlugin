@@ -1,7 +1,8 @@
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class DtoConvert {
@@ -14,8 +15,24 @@ public class DtoConvert {
         return gson.fromJson(gson.toJson(val), clazz);
     }
 
-    public static <T> List<T> convert2List(List valList , Class<T> clazz){
-        return gson.fromJson(gson.toJson(valList) , new TypeToken<T>(){}.getType());
+    public static <T> List<T> convert2List(List valList , final Class<T> clazz){
+        ParameterizedType parameterizedType = new ParameterizedType() {
+            @Override
+            public Type[] getActualTypeArguments() {
+                return new Type[]{clazz};
+            }
+
+            @Override
+            public Type getRawType() {
+                return List.class;
+            }
+
+            @Override
+            public Type getOwnerType() {
+                return null;
+            }
+        };
+        return gson.fromJson(gson.toJson(valList) , parameterizedType);
     }
 
 }

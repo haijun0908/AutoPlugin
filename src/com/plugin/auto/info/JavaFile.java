@@ -10,6 +10,8 @@ public class JavaFile {
     private boolean isAbstract = false;
     private String fileComment;
     private FileType fileType;
+    private String anno;
+    private boolean canOverwrite = true;
 
     private String parentClass;
     private List<String> implClassList;
@@ -102,6 +104,22 @@ public class JavaFile {
 
     public void setMethodList(List<JavaFileMethod> methodList) {
         this.methodList = methodList;
+    }
+
+    public String getAnno() {
+        return anno;
+    }
+
+    public void setAnno(String anno) {
+        this.anno = anno;
+    }
+
+    public boolean isCanOverwrite() {
+        return canOverwrite;
+    }
+
+    public void setCanOverwrite(boolean canOverwrite) {
+        this.canOverwrite = canOverwrite;
     }
 
     public static enum FileType {

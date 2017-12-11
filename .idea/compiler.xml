@@ -8,6 +8,6 @@
         <outputRelativeToContentRoot value="true" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.7" />
+    <bytecodeTargetLevel target="1.8" />
   </component>
 </project>

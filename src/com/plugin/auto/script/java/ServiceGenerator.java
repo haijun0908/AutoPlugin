@@ -79,6 +79,9 @@ public class ServiceGenerator extends JavaGenerator {
 
             importList.add(configInfo.getPackagePath() + "." + convertGenerator.getSubPackage() + "." + convertGenerator.getJavaName());
 
+            importList.add("org.springframework.stereotype.Service");
+            importList.add("org.springframework.beans.factory.annotation.Autowired");
+
         } else {
 
         }
@@ -126,7 +129,7 @@ public class ServiceGenerator extends JavaGenerator {
             list.add(new JavaFileField().access(JavaAccess.PRIVATE)
                     .type(daoGenerator.getFileName())
                     .field(PluginUtils.javaName(daoGenerator.getFileName(), false))
-                    .anno("Resource")
+                    .anno("Autowired")
             );
         }
         return list;
@@ -171,11 +174,18 @@ public class ServiceGenerator extends JavaGenerator {
 
 
         List<JavaFileMethod> methodList = new ArrayList<>();
-        //save
+        //savea
         JavaFileMethod save = new JavaFileMethod();
         save.returnType("boolean").method("save" + javaName).params(dtoName + " " + PluginUtils.lowerFirst(dtoName));
         if (isImpl) {
-            save.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.saveName() + "(" + dto2Model() + ") > 0;");
+            String body = modelGenerator.getFileName() + " model = " + dto2Model() + ";\n";
+            body += "int rows = " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.saveName() + "(model);\n";
+            body += "if (rows > 0) {\n";
+            body += "    " + PluginUtils.lowerFirst(dtoName) + ".set" + PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getField(), true) + "(model.get" + PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getField(), true) + "());\n";
+            body += "}\n";
+            body += "return rows > 0;";
+            save.body(body)
+                    .anno("Override");
         }
 
 
@@ -183,7 +193,7 @@ public class ServiceGenerator extends JavaGenerator {
         JavaFileMethod update = new JavaFileMethod();
         update.returnType("boolean").method("update" + javaName).params(dtoName + " " + PluginUtils.lowerFirst(dtoName));
         if (isImpl) {
-            update.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.updateName() + "(" + dto2Model() + ");");
+            update.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.updateName() + "(" + dto2Model() + ");").anno("Override");
         }
 
 
@@ -191,21 +201,21 @@ public class ServiceGenerator extends JavaGenerator {
         JavaFileMethod delete = new JavaFileMethod();
         delete.returnType("boolean").method("deleteBy" + primaryKey).params(primaryParams);
         if (isImpl) {
-            delete.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.deleteName() + "(" + primaryObjs + ");");
+            delete.body("return " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.deleteName() + "(" + primaryObjs + ");").anno("Override");
         }
 
         //get
         JavaFileMethod get = new JavaFileMethod();
         get.returnType(dtoName).method("get" + javaName + "By" + primaryKey).params(primaryParams);
         if (isImpl) {
-            get.body("return " + model2dto(PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getName() + "(" + primaryObjs + ")") + ";");
+            get.body("return " + model2dto(PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getName() + "(" + primaryObjs + ")") + ";").anno("Override");
         }
 
         //getAll
         JavaFileMethod getAll = new JavaFileMethod();
         getAll.returnType("List<" + dtoName + ">").method("getAll");
         if (isImpl) {
-            getAll.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getAllName() + "(), " + dtoGenerator.getFileName() + ".class);");
+            getAll.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getAllName() + "(), " + dtoGenerator.getFileName() + ".class);").anno("Override");
         }
 
         methodList.add(save);
@@ -220,7 +230,7 @@ public class ServiceGenerator extends JavaGenerator {
             JavaFileMethod getList = new JavaFileMethod();
             getList.returnType("List<" + dtoName + ">").method("get" + javaName + "List").params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
             if (isImpl) {
-                getList.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getListName() + "(" + primaryList.get(0).getField() + "List), " + dtoGenerator.getFileName() + ".class);");
+                getList.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getListName() + "(" + primaryList.get(0).getField() + "List), " + dtoGenerator.getFileName() + ".class);").anno("Override");
             }
 
             //map
@@ -237,7 +247,7 @@ public class ServiceGenerator extends JavaGenerator {
                         "        return map;" + "\n" +
                         "    }" + "\n" +
                         "    return null;" + "\n";
-                map.body(body);
+                map.body(body).anno("Override");
             }
 
             methodList.add(getList);
@@ -262,11 +272,21 @@ public class ServiceGenerator extends JavaGenerator {
     }
 
     @Override
+    protected String getAnno() {
+        return isImpl ? "Service" : null;
+    }
+
+    @Override
     public void aroundFile(Around around, JavaFile javaFile, StringBuilder sb) {
         super.aroundFile(around, javaFile, sb);
         if (around == Around.after && isImpl) {
             //copy
             new DTOConvertGenerator(configInfo.getWriteFilePath(), configInfo.getPackagePath()).generator();
         }
+    }
+
+    @Override
+    protected boolean getCanOverwrite() {
+        return false;
     }
 }

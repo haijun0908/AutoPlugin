@@ -97,6 +97,11 @@ public class ModelGenerator extends JavaGenerator {
         return "model";
     }
 
+    @Override
+    protected String getAnno() {
+        return null;
+    }
+
 
     public static void main(String[] args) {
         TableInfo tableInfo = new TableInfo();
