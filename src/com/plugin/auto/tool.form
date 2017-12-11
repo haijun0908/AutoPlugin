@@ -85,6 +85,7 @@
               <focusPainted value="true"/>
               <icon value="actions/pause.png"/>
               <text value=""/>
+              <visible value="false"/>
             </properties>
           </component>
           <hspacer id="fb7f2">
@@ -99,7 +100,9 @@
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <forms defaultalign-horz="false" defaultalign-vert="false"/>
         </constraints>
-        <properties/>
+        <properties>
+          <verticalScrollBarPolicy value="20"/>
+        </properties>
         <border type="none"/>
         <children>
           <component id="5619e" class="javax.swing.JTable" binding="table1" custom-create="true" default-binding="true">

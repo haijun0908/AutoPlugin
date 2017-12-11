@@ -21,10 +21,9 @@ public class TableUtils {
     public TableUtils(DatabaseConfigInfo configInfo) {
         dbHelper = new DBHelper(configInfo);
         this.dbName = configInfo.getDb();
-        initTables();
     }
 
-    private void initTables() {
+    public void initTables() {
         String sql = "show tables;";
         tableInfoList = new ArrayList<>();
         try {
@@ -43,6 +42,24 @@ public class TableUtils {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean canConnect() {
+        String sql = "show tables;";
+        try {
+            PreparedStatement ps = dbHelper.getPreparedStatement(sql);
+            if (ps != null)
+                return true;
+        } catch (Exception e) {
+//            e.printStackTrace();
+        } finally {
+            try {
+                dbHelper.close();
+            } catch (Exception e){
+//                e.printStackTrace();
+            }
+        }
+        return false;
     }
 
     private void descTable() {
@@ -70,7 +87,7 @@ public class TableUtils {
                     info.setCustomField(info.getField());
                     columnInfoList.add(info);
 
-                    columnMap.put(tableName , columnInfoList);
+                    columnMap.put(tableName, columnInfoList);
                 }
 
                 for (TableInfo tableInfo : tableInfoList) {
@@ -86,7 +103,6 @@ public class TableUtils {
     public List<TableInfo> getTables() {
         return tableInfoList;
     }
-
 
 
 }

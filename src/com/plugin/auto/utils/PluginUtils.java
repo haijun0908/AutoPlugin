@@ -17,7 +17,7 @@ public class PluginUtils {
     static {
         regList.add(new Reg("int", "int", "", "Integer"));
         regList.add(new Reg("float|double|decimal|real", "double", "", "Double"));
-        regList.add(new Reg("datetime|timestamp", "Timestamp", "java.util.Timestamp", "Timestamp"));
+        regList.add(new Reg("datetime|timestamp", "Date", "java.util.Date", "Date"));
         regList.add(new Reg("date", "Date", "java.util.Date", "Date"));
         regList.add(new Reg("time", "Time", "java.util.Time", "Time"));
         regList.add(new Reg("", "String", "", "String"));

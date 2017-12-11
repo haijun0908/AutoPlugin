@@ -123,7 +123,6 @@ public class SettingUI implements Configurable {
                 super.tableChanged(e);
                 repaint();
             }
-
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;

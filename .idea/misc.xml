@@ -64,13 +64,6 @@
       <textMaps />
     </LinkMapSettings>
   </component>
-  <component name="MavenProjectsManager">
-    <option name="originalFiles">
-      <list>
-        <option value="$PROJECT_DIR$/mybatis_test/pom.xml" />
-      </list>
-    </option>
-  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="IntelliJ IDEA IU-172.4574.11" project-jdk-type="IDEA JDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>

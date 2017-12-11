@@ -1,23 +1,23 @@
 package com.plugin.auto.config;
 
+import com.intellij.openapi.fileChooser.FileChooser;
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.plugin.auto.common.DialogConfirmCallback;
+import com.plugin.auto.db.TableUtils;
 import com.plugin.auto.info.DatabaseConfigInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileWriter;
 
 public class DatabaseConfigDialog extends DialogWrapper {
-    private static final long serialVersionUID = -317495679511983280L;
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -30,10 +30,11 @@ public class DatabaseConfigDialog extends DialogWrapper {
     private JButton openButton;
     private JTextField packageName;
     private JLabel folder;
+    private JButton test;
 
     private DatabaseConfigInfo configInfo;
     private DialogConfirmCallback<DatabaseConfigInfo> callback;
-
+    private VirtualFile virtualFile;
     protected DatabaseConfigDialog(@Nullable Project project) {
         super(project);
     }
@@ -80,31 +81,19 @@ public class DatabaseConfigDialog extends DialogWrapper {
         buttonCancel.addActionListener(e -> onCancel());
 
         openButton.addActionListener(e -> {
-            JFileChooser jf = new JFileChooser();
-            jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            jf.setAcceptAllFileFilterUsed(false);
-            if(StringUtils.isNotBlank(folder.getText())){
-                jf.setCurrentDirectory(new File(folder.getText()));
-            }
-            int status = jf.showDialog(null, "确定");
-            if(status == JFileChooser.APPROVE_OPTION){
-                File fi = jf.getSelectedFile();
-                if (fi != null) {
-                    if (fi.isFile()) {
-                        folder.setText(fi.getParentFile().getPath());
-                    } else {
-                        if(!fi.exists()){
-                            fi = fi.getParentFile();
-                        }
-                        folder.setText(fi.getPath());
-                    }
-                }
+            virtualFile = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFolderDescriptor(), ProjectManager.getInstance().getDefaultProject(), virtualFile);
+            if (virtualFile != null) {
+                folder.setText(virtualFile.getPath());
             }
         });
 
         // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        test.addActionListener(e -> testConnect());
     }
+
+
 
     private void onOK() {
         if (StringUtils.isAnyBlank(name.getText(), host.getText(), port.getText(), user.getText(), password.getText(), db.getText(), folder.getText(), packageName.getText())) {
@@ -137,6 +126,22 @@ public class DatabaseConfigDialog extends DialogWrapper {
 
     public void setCallback(DialogConfirmCallback<DatabaseConfigInfo> callback) {
         this.callback = callback;
+    }
+
+    private void testConnect() {
+        DatabaseConfigInfo info = new DatabaseConfigInfo();
+        info.setHost(host.getText());
+        info.setPort(port.getText());
+        info.setDb(db.getText());
+        info.setUser(user.getText());
+        info.setPwd(password.getText());
+        TableUtils tableUtils = new TableUtils(info);
+        boolean canConnect = tableUtils.canConnect();
+        if(canConnect){
+            Messages.showMessageDialog("Connect successful", "OK", Messages.getInformationIcon());
+        }else{
+            Messages.showMessageDialog("Connect Error!!", "Error", Messages.getErrorIcon());
+        }
     }
 
     @Nullable

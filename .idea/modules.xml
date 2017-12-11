@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AutoPlugin.iml" filepath="$PROJECT_DIR$/AutoPlugin.iml" />
-      <module fileurl="file://$PROJECT_DIR$/OutFile/OutFile.iml" filepath="$PROJECT_DIR$/OutFile/OutFile.iml" />
-      <module fileurl="file://$PROJECT_DIR$/mybatis_test/mybatis_test.iml" filepath="$PROJECT_DIR$/mybatis_test/mybatis_test.iml" />
     </modules>
   </component>
 </project>

@@ -1,10 +1,14 @@
 package com.plugin.auto;
 
+import com.intellij.openapi.options.ShowSettingsUtil;
+import com.intellij.openapi.options.newEditor.SettingsDialogFactory;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
+import com.plugin.auto.config.SettingUI;
 import com.plugin.auto.db.TableUtils;
 import com.plugin.auto.info.DatabaseConfigInfo;
 import com.plugin.auto.info.TableInfo;
@@ -38,12 +42,8 @@ public class PluginToolWindow implements ToolWindowFactory {
     private DatabaseConfigInfo selectConfigInfo;
 
     public PluginToolWindow() {
-        configBtn.addActionListener(e -> {
-        });
-        connectBtn.addActionListener(e -> {
-            connectJDBC();
-            showTables();
-        });
+        configBtn.addActionListener(e -> ShowSettingsUtil.getInstance().editConfigurable(ProjectManager.getInstance().getDefaultProject(), new SettingUI()));
+        connectBtn.addActionListener(e -> connectJDBC());
         disConnectBtn.addActionListener(e -> disConnectJDBC());
         selectList.addItemListener(e -> {
 
@@ -123,10 +123,16 @@ public class PluginToolWindow implements ToolWindowFactory {
      */
     private void connectJDBC() {
         loading.setVisible(true);
-        DatabaseConfigInfo configInfo = getSelectConfig();
-        tableUtils = new TableUtils(configInfo);
-        this.selectConfigInfo = configInfo;
-        loading.setVisible(false);
+        new Thread(() -> {
+            DatabaseConfigInfo configInfo = getSelectConfig();
+            tableUtils = new TableUtils(configInfo);
+            tableUtils.initTables();
+            PluginToolWindow.this.selectConfigInfo = configInfo;
+            loading.setVisible(false);
+            showTables();
+        }).start();
+
+
     }
 
     @Override
