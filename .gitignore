@@ -1,2 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 /OutFile/
+.DS_Store
+.idea/dataSources.local.xml
+.idea/dataSources/
+.idea/workspace.xml
+out/
+src/com/plugin/auto/out/
