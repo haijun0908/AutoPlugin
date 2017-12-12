@@ -150,12 +150,13 @@ public class MapperGenerator {
     }
 
     private String getTable() {
-//        return " <include refid=\"table\"/> ";
-        return tableInfo.getOriginTableName();
+        return " <include refid=\"table\"/> ";
+//        return tableInfo.getOriginTableName();
     }
 
     private String getFields() {
-        return "*";
+//        return "*";
+        return "<include refid=\"fields\"/>";
     }
 
     private String getDaoName() {
