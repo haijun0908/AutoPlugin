@@ -46,9 +46,7 @@ public class TableRightMenu {
     private JBMenuItem getItem(RightMenuItem menuItem) {
         JBMenuItem item = new JBMenuItem(menuItem.getItem());
         item.setIcon(IconLoader.findIcon(menuItem.getIcon()));
-        item.addActionListener(e -> {
-            clickItem(menuItem);
-        });
+        item.addActionListener(e -> clickItem(menuItem));
         return item;
     }
 

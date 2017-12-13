@@ -1,5 +1,6 @@
 package com.plugin.auto.info;
 
+import com.plugin.auto.utils.PluginUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class ColumnInfo {
@@ -68,5 +69,15 @@ public class ColumnInfo {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String lowerField(){
+        return PluginUtils.javaName(this.field , false);
+    }
+    public String upperField(){
+        return PluginUtils.javaName(this.field , true);
+    }
+    public String showParam(){
+        return PluginUtils.reg(this).type + " " + lowerField();
     }
 }

@@ -1,6 +1,7 @@
 package com.plugin.auto.db;
 
 import com.plugin.auto.info.DatabaseConfigInfo;
+import com.plugin.auto.utils.ProgressText;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,8 +19,11 @@ public class DBHelper {
 
     private void connect(){
         try {
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(getUrl(),configInfo.getUser() , configInfo.getPwd());
+            if(conn == null || conn.isClosed()){
+                ProgressText.setProgress("prepare connect " + configInfo.getHost());
+                Class.forName("com.mysql.jdbc.Driver");
+                conn = DriverManager.getConnection(getUrl(),configInfo.getUser() , configInfo.getPwd());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -31,6 +35,7 @@ public class DBHelper {
 
     public PreparedStatement getPreparedStatement(String sql) throws SQLException {
         connect();
+        ProgressText.setProgress(sql);
         return conn.prepareStatement(sql);
     }
 
@@ -43,6 +48,7 @@ public class DBHelper {
             }
         }
         conn = null;
+        ProgressText.setProgress("");
     }
 
 }

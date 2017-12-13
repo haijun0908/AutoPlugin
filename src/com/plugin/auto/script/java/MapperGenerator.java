@@ -1,6 +1,7 @@
 package com.plugin.auto.script.java;
 
 import com.intellij.openapi.util.io.FileUtil;
+import com.intellij.xml.util.CheckTagEmptyBodyInspection;
 import com.plugin.auto.info.ColumnInfo;
 import com.plugin.auto.info.DatabaseConfigInfo;
 import com.plugin.auto.info.TableInfo;
@@ -124,6 +125,20 @@ public class MapperGenerator {
                     .value(value);
             elementList.add(getList);
 
+        }
+
+        if (tableInfo.getTableIndexList() != null && tableInfo.getTableIndexList().size() > 0) {
+
+            tableInfo.getTableIndexList().stream().filter(tableIndex -> !(tableIndex.isUnique() && tableIndex.getColumnInfoList().size() == 1))
+                    .forEach(tableIndex -> {
+                        String value = "SELECT " + getFields() + " FROM " + getTable();
+                        value += " WHERE " + tableIndex.getColumnInfoList().stream()
+                                .map(columnInfo -> columnInfo.getField() + "=#{" + columnInfo.lowerField() + "}").collect(Collectors.joining(" AND "));
+                        elementList.add(new MapperSelect().resultMap("model")
+                                .id(tableIndex.getMethod())
+                                .value(value)
+                        );
+                    });
         }
 
 

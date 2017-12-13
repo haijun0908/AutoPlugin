@@ -7,6 +7,7 @@ import com.plugin.auto.utils.PluginUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MybatisDaoGenerator extends JavaGenerator {
     public static final int PARENT = 1;
@@ -167,13 +168,15 @@ public class MybatisDaoGenerator extends JavaGenerator {
             JavaFileMethod getList = new JavaFileMethod();
             getList.returnType("List<" + modelName + ">").method(getListName()).params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
 
-            //map
-//            JavaFileMethod map = new JavaFileMethod();
-//            map.returnType("Map<" + primaryReg.packageName + ", " + modelName + ">").method(getMapName())
-//                    .params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
-
             methodList.add(getList);
-//            methodList.add(map);
+
+            if (tableInfo.getTableIndexList() != null && tableInfo.getTableIndexList().size() > 0) {
+                tableInfo.getTableIndexList().stream().filter(tableIndex -> !(tableIndex.isUnique() && tableIndex.getColumnInfoList().size() == 1))
+                        .forEach(tableIndex -> methodList.add(new JavaFileMethod().returnType(tableIndex.getReturnType(modelName))
+                                .method(tableIndex.getMethod())
+                                .params(tableIndex.getParams())
+                        ));
+            }
         }
 
         return methodList;
@@ -222,8 +225,8 @@ public class MybatisDaoGenerator extends JavaGenerator {
     @Override
     public void aroundFile(Around around, JavaFile javaFile, StringBuilder sb) {
         super.aroundFile(around, javaFile, sb);
-        if(around == Around.after && isBase){
-            new MapperGenerator(configInfo , tableInfo).generator();
+        if (around == Around.after && isBase) {
+            new MapperGenerator(configInfo, tableInfo).generator();
         }
     }
 }

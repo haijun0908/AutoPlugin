@@ -1,21 +1,27 @@
 package com.plugin.auto.info;
 
-import com.intellij.ui.tabs.TabInfo;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class TableInfo {
+    /**表明**/
     private String tableName;
+    /**字段**/
     private List<ColumnInfo> columnInfoList;
+    /**注释**/
     private String comment;
+    /**原始的表名**/
     private String originTableName;
+    /**表索引**/
+    private List<TableIndex> tableIndexList;
+
+    public List<TableIndex> getTableIndexList() {
+        return tableIndexList;
+    }
+
+    public void setTableIndexList(List<TableIndex> tableIndexList) {
+        this.tableIndexList = tableIndexList;
+    }
 
     public String getOriginTableName() {
         return originTableName;
@@ -67,19 +73,6 @@ public class TableInfo {
             return null;
         }
         return columnInfoList.stream().filter(ColumnInfo::isAutoIncrement).findFirst().orElse(null);
-    }
-
-    public static void main(String[] args) {
-        List<Integer> list = new ArrayList<>();
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        list.add(4);
-        list.add(5);
-        System.out.println(list.stream()
-                .filter(integer -> integer > 3)
-                .map(integer -> integer + "aaa")
-                .collect(Collectors.joining()));
     }
 
 

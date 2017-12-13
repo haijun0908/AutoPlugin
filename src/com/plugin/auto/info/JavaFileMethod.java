@@ -90,4 +90,32 @@ public class JavaFileMethod {
         this.anno = anno;
         return this;
     }
+
+    public String getReturnType() {
+        return returnType;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public String getParams() {
+        return params;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public JavaAccess getAccess() {
+        return access;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public String getAnno() {
+        return anno;
+    }
 }

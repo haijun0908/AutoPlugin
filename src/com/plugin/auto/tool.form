@@ -3,6 +3,8 @@
   <grid id="27dc6" binding="myToolWindowContent" layout-manager="FormLayout">
     <rowspec value="center:d:noGrow"/>
     <rowspec value="top:3dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:3dlu:noGrow"/>
     <rowspec value="center:d:grow"/>
     <colspec value="fill:566px:grow"/>
     <constraints>
@@ -97,7 +99,7 @@
       </grid>
       <scrollpane id="9966a">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
           <forms defaultalign-horz="false" defaultalign-vert="false"/>
         </constraints>
         <properties>
@@ -111,6 +113,15 @@
           </component>
         </children>
       </scrollpane>
+      <component id="50586" class="javax.swing.JLabel" binding="showProgress">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties>
+          <text value=""/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

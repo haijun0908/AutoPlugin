@@ -6,6 +6,9 @@ import com.plugin.auto.utils.PluginUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class ServiceGenerator extends JavaGenerator {
     public static final int SERVICE = 1;
@@ -174,15 +177,17 @@ public class ServiceGenerator extends JavaGenerator {
 
 
         List<JavaFileMethod> methodList = new ArrayList<>();
-        //savea
+        //save
         JavaFileMethod save = new JavaFileMethod();
         save.returnType("boolean").method("save" + javaName).params(dtoName + " " + PluginUtils.lowerFirst(dtoName));
         if (isImpl) {
             String body = modelGenerator.getFileName() + " model = " + dto2Model() + ";\n";
             body += "int rows = " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.saveName() + "(model);\n";
-            body += "if (rows > 0) {\n";
-            body += "    " + PluginUtils.lowerFirst(dtoName) + ".set" + PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getField(), true) + "(model.get" + PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getField(), true) + "());\n";
-            body += "}\n";
+            if (tableInfo.getAutoIncrementColumn() != null) {
+                body += "if (rows > 0) {\n";
+                body += "    " + PluginUtils.lowerFirst(dtoName) + ".set" + PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getField(), true) + "(model.get" + PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getField(), true) + "());\n";
+                body += "}\n";
+            }
             body += "return rows > 0;";
             save.body(body)
                     .anno("Override");
@@ -215,7 +220,8 @@ public class ServiceGenerator extends JavaGenerator {
         JavaFileMethod getAll = new JavaFileMethod();
         getAll.returnType("List<" + dtoName + ">").method("getAll");
         if (isImpl) {
-            getAll.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getAllName() + "(), " + dtoGenerator.getFileName() + ".class);").anno("Override");
+            getAll.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getAllName() + "(), " + dtoGenerator.getFileName() + ".class);")
+                    .anno("Override");
         }
 
         methodList.add(save);
@@ -230,7 +236,8 @@ public class ServiceGenerator extends JavaGenerator {
             JavaFileMethod getList = new JavaFileMethod();
             getList.returnType("List<" + dtoName + ">").method("get" + javaName + "List").params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
             if (isImpl) {
-                getList.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getListName() + "(" + primaryList.get(0).getField() + "List), " + dtoGenerator.getFileName() + ".class);").anno("Override");
+                getList.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getListName() + "(" + primaryList.get(0).getField() + "List), " + dtoGenerator.getFileName() + ".class);")
+                        .anno("Override");
             }
 
             //map
@@ -252,6 +259,21 @@ public class ServiceGenerator extends JavaGenerator {
 
             methodList.add(getList);
             methodList.add(map);
+        }
+
+        if (tableInfo.getTableIndexList() != null && tableInfo.getTableIndexList().size() > 0) {
+            tableInfo.getTableIndexList().stream().filter(tableIndex -> !(tableIndex.isUnique() && tableIndex.getColumnInfoList().size() == 1))
+                    .forEach(tableIndex -> {
+                        JavaFileMethod method = new JavaFileMethod().returnType(tableIndex.getReturnType(dtoName))
+                                .method(tableIndex.getMethod())
+                                .params(tableIndex.getParams());
+                        if (isImpl) {
+                            method.body("return " + convertGenerator.getJavaName() + ".convert" + (tableIndex.isUnique() ? "" : "2List") + "(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + method.getMethod() + "(" +
+                                    tableIndex.getColumnInfoList().stream().map(ColumnInfo::lowerField).collect(Collectors.joining(", ")) + "), " + dtoGenerator.getFileName() + ".class);")
+                                    .anno("Override");
+                        }
+                        methodList.add(method);
+                    });
         }
 
 

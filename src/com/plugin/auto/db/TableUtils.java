@@ -2,15 +2,13 @@ package com.plugin.auto.db;
 
 import com.plugin.auto.info.ColumnInfo;
 import com.plugin.auto.info.DatabaseConfigInfo;
+import com.plugin.auto.info.TableIndex;
 import com.plugin.auto.info.TableInfo;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TableUtils {
 
@@ -24,16 +22,17 @@ public class TableUtils {
     }
 
     public void initTables() {
-        String sql = "show tables;";
+        String sql = "show table STATUS";
         tableInfoList = new ArrayList<>();
         try {
             PreparedStatement ps = dbHelper.getPreparedStatement(sql);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                String tableName = rs.getString(1);
+                String tableName = rs.getString("Name");
                 TableInfo tableInfo = new TableInfo();
                 tableInfo.setTableName(tableName);
                 tableInfo.setOriginTableName(tableName);
+                tableInfo.setComment(rs.getString("Comment"));
                 tableInfoList.add(tableInfo);
             }
             descTable();
@@ -55,7 +54,7 @@ public class TableUtils {
         } finally {
             try {
                 dbHelper.close();
-            } catch (Exception e){
+            } catch (Exception e) {
 //                e.printStackTrace();
             }
         }
@@ -65,7 +64,9 @@ public class TableUtils {
     private void descTable() {
         try {
             if (tableInfoList != null && tableInfoList.size() > 0) {
-                String sql = "select TABLE_NAME,COLUMN_NAME,COLUMN_DEFAULT,DATA_TYPE,COLUMN_KEY,COLUMN_COMMENT,EXTRA from information_schema.columns where table_schema = '" + this.dbName + "'";
+
+
+                String sql = "select TABLE_NAME,COLUMN_COMMENT,COLUMN_NAME,COLUMN_KEY,DATA_TYPE,COLUMN_DEFAULT,EXTRA from information_schema.columns where table_schema = '" + this.dbName + "'";
                 PreparedStatement ps = dbHelper.getPreparedStatement(sql);
                 ResultSet rs = ps.executeQuery();
                 Map<String, List<ColumnInfo>> columnMap = new HashMap<>();
@@ -92,6 +93,8 @@ public class TableUtils {
 
                 for (TableInfo tableInfo : tableInfoList) {
                     tableInfo.setColumnInfoList(columnMap.get(tableInfo.getTableName()));
+
+                    fillTableIndex(tableInfo);
                 }
 
             }
@@ -104,5 +107,52 @@ public class TableUtils {
         return tableInfoList;
     }
 
+    public void fillTableIndex(TableInfo tableInfo) {
 
+        //todo test
+        if (!tableInfo.getTableName().startsWith("cc_")) {
+            return;
+        }
+
+
+        String sql = "show INDEX from " + tableInfo.getTableName();
+        try {
+            Map<String, ColumnInfo> columnInfoMap = new HashMap<>();
+            for (ColumnInfo columnInfo : tableInfo.getColumnInfoList()) {
+                columnInfoMap.put(columnInfo.getField(), columnInfo);
+            }
+            PreparedStatement ps = dbHelper.getPreparedStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            Map<String, TableIndex> map = new LinkedHashMap<>();
+            while (rs.next()) {
+                String keyName = rs.getString("Key_name");
+                TableIndex tableIndex = null;
+                if (map.containsKey(keyName)) {
+                    tableIndex = map.get(keyName);
+                } else {
+                    tableIndex = new TableIndex();
+                }
+                boolean isUnique = rs.getInt("Non_unique") == 0;
+                ColumnInfo columnInfo = columnInfoMap.get(rs.getString("Column_name"));
+                tableIndex.setUnique(isUnique);
+                List<ColumnInfo> columnInfoList = tableIndex.getColumnInfoList();
+                if (columnInfoList == null) {
+                    columnInfoList = new ArrayList<>();
+                }
+                columnInfoList.add(columnInfo);
+                tableIndex.setColumnInfoList(columnInfoList);
+                map.put(keyName, tableIndex);
+            }
+            Iterator keys = map.keySet().iterator();
+            List<TableIndex> tableIndexList = new ArrayList<>();
+            while (keys.hasNext()) {
+                tableIndexList.add(map.get((String) keys.next()));
+            }
+            tableInfo.setTableIndexList(tableIndexList);
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

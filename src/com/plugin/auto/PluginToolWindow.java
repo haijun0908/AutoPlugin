@@ -1,7 +1,6 @@
 package com.plugin.auto;
 
 import com.intellij.openapi.options.ShowSettingsUtil;
-import com.intellij.openapi.options.newEditor.SettingsDialogFactory;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.wm.ToolWindow;
@@ -13,6 +12,7 @@ import com.plugin.auto.db.TableUtils;
 import com.plugin.auto.info.DatabaseConfigInfo;
 import com.plugin.auto.info.TableInfo;
 import com.plugin.auto.menu.TableRightMenu;
+import com.plugin.auto.utils.ProgressText;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
@@ -34,6 +34,7 @@ public class PluginToolWindow implements ToolWindowFactory {
     private JButton disConnectBtn;
     private JLabel loading;
     private JTable table1;
+    private JLabel showProgress;
     private ToolWindow myToolWindow;
 
     private TableUtils tableUtils;
@@ -42,6 +43,7 @@ public class PluginToolWindow implements ToolWindowFactory {
     private DatabaseConfigInfo selectConfigInfo;
 
     public PluginToolWindow() {
+        ProgressText.regTool(this);
         configBtn.addActionListener(e -> ShowSettingsUtil.getInstance().editConfigurable(ProjectManager.getInstance().getDefaultProject(), new SettingUI()));
         connectBtn.addActionListener(e -> connectJDBC());
         disConnectBtn.addActionListener(e -> disConnectJDBC());
@@ -77,6 +79,7 @@ public class PluginToolWindow implements ToolWindowFactory {
 
             }
         });
+
     }
 
     /**
@@ -193,5 +196,9 @@ public class PluginToolWindow implements ToolWindowFactory {
             selectTable.add(tableUtils.getTables().get(selectRow));
         }
         new TableRightMenu(selectConfigInfo, selectTable, table1, e.getX(), e.getY());
+    }
+
+    public void setProgress(String text){
+        showProgress.setText(text);
     }
 }

@@ -103,35 +103,5 @@ public class ModelGenerator extends JavaGenerator {
     }
 
 
-    public static void main(String[] args) {
-        TableInfo tableInfo = new TableInfo();
-        tableInfo.setTableName("cc_circle22");
-        tableInfo.setOriginTableName("cc_circle22");
-        List<ColumnInfo> columnInfoList = new ArrayList<>();
-        ColumnInfo ci = new ColumnInfo();
-        ci.setType("int");
-        ci.setPrimaryKey(true);
-        ci.setField("id");
-        ci.setComment("zhujianid");
-        ci.setDefaultVal(22);
-        ci.setAutoIncrement(true);
-        columnInfoList.add(ci);
-        ColumnInfo ci3 = new ColumnInfo();
-        ci3.setType("date");
-        ci3.setPrimaryKey(false);
-        ci3.setField("createTime");
-        ci3.setComment("zhujianid");
-        ci3.setDefaultVal(22);
-        columnInfoList.add(ci3);
-        tableInfo.setColumnInfoList(columnInfoList);
 
-        DatabaseConfigInfo configInfo = new DatabaseConfigInfo();
-        configInfo.setPackagePath("com.plugin.auto.out");
-        configInfo.setWriteFilePath("/Users/Jun/Documents/idea_workspace/AutoPlugin/OutFile/src/");
-
-        new DtoGenerator(configInfo, Arrays.asList(tableInfo)).startGeneratorList();
-        new ModelGenerator(configInfo, Arrays.asList(tableInfo)).startGeneratorList();
-        new ServiceGenerator(configInfo , Arrays.asList(tableInfo)).startGeneratorList();
-        new MybatisDaoGenerator(configInfo , Arrays.asList(tableInfo)).startGeneratorList();
-    }
 }
