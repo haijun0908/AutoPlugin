@@ -31,10 +31,14 @@ public class DatabaseConfigDialog extends DialogWrapper {
     private JTextField packageName;
     private JLabel folder;
     private JButton test;
+    private JButton resourceBtn;
+    private JLabel resourceFolder;
 
     private DatabaseConfigInfo configInfo;
     private DialogConfirmCallback<DatabaseConfigInfo> callback;
-    private VirtualFile virtualFile;
+    private VirtualFile folderVF;
+    private VirtualFile resourceVF;
+
     protected DatabaseConfigDialog(@Nullable Project project) {
         super(project);
     }
@@ -59,6 +63,7 @@ public class DatabaseConfigDialog extends DialogWrapper {
             name.setEnabled(false);
             folder.setText(configInfo.getWriteFilePath());
             packageName.setText(configInfo.getPackagePath());
+            resourceFolder.setText(configInfo.getResourcePath());
         }
     }
 
@@ -76,14 +81,22 @@ public class DatabaseConfigDialog extends DialogWrapper {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
+        resourceFolder.setSize(100, 0);
+        folder.setSize(100, 0);
         buttonOK.addActionListener(e -> onOK());
 
         buttonCancel.addActionListener(e -> onCancel());
 
         openButton.addActionListener(e -> {
-            virtualFile = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFolderDescriptor(), ProjectManager.getInstance().getDefaultProject(), virtualFile);
-            if (virtualFile != null) {
-                folder.setText(virtualFile.getPath());
+            folderVF = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFolderDescriptor(), ProjectManager.getInstance().getDefaultProject(), folderVF);
+            if (folderVF != null) {
+                folder.setText(folderVF.getPath());
+            }
+        });
+        resourceBtn.addActionListener(e -> {
+            resourceVF = FileChooser.chooseFile(FileChooserDescriptorFactory.createSingleFolderDescriptor(), ProjectManager.getInstance().getDefaultProject(), resourceVF);
+            if (resourceVF != null) {
+                resourceFolder.setText(resourceVF.getPath());
             }
         });
 
@@ -94,9 +107,9 @@ public class DatabaseConfigDialog extends DialogWrapper {
     }
 
 
-
     private void onOK() {
-        if (StringUtils.isAnyBlank(name.getText(), host.getText(), port.getText(), user.getText(), password.getText(), db.getText(), folder.getText(), packageName.getText())) {
+        if (StringUtils.isAnyBlank(name.getText(), host.getText(), port.getText(), user.getText(), password.getText(), db.getText(),
+                folder.getText(), packageName.getText(), resourceFolder.getText())) {
             Messages.showMessageDialog("请输入完整的信息", "Error", Messages.getInformationIcon());
             return;
         }
@@ -113,6 +126,7 @@ public class DatabaseConfigDialog extends DialogWrapper {
         configInfo.setName(name.getText());
         configInfo.setWriteFilePath(folder.getText());
         configInfo.setPackagePath(packageName.getText());
+        configInfo.setResourcePath(resourceFolder.getText());
 
         callback.confirm(this, configInfo);
 
@@ -137,9 +151,9 @@ public class DatabaseConfigDialog extends DialogWrapper {
         info.setPwd(password.getText());
         TableUtils tableUtils = new TableUtils(info);
         boolean canConnect = tableUtils.canConnect();
-        if(canConnect){
+        if (canConnect) {
             Messages.showMessageDialog("Connect successful", "OK", Messages.getInformationIcon());
-        }else{
+        } else {
             Messages.showMessageDialog("Connect Error!!", "Error", Messages.getErrorIcon());
         }
     }

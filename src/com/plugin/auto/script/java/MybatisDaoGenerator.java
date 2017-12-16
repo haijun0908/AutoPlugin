@@ -6,6 +6,7 @@ import com.plugin.auto.utils.PluginUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,20 @@ public class MybatisDaoGenerator extends JavaGenerator {
         importList.add("java.util.List");
         importList.add("java.util.Map");
 
+        importList.add("");
+
+        importList.add("org.apache.ibatis.annotations.Param");
+
+        if (tableInfo.getTableIndexList() != null && tableInfo.getTableIndexList().size() > 0) {
+            tableInfo.getTableIndexList().stream()
+                    .map(tableIndex -> PluginUtils.getImportList(tableIndex.getColumnInfoList()))
+                    .forEach(importList::addAll);
+        }
+
+        HashSet<String> h = new HashSet<String>(importList);
+        importList.clear();
+        importList.addAll(h);
+
         if (!isBase) {
             DaoGenerator dao = new DaoGenerator(configInfo, null);
             dao.resetCurrentTime(PARENT, tableInfo);
@@ -127,34 +142,32 @@ public class MybatisDaoGenerator extends JavaGenerator {
             return null;
         }
 
-
         ModelGenerator modelGenerator = new ModelGenerator(configInfo, null);
         modelGenerator.resetCurrentTime(1, tableInfo);
         String modelName = modelGenerator.getFileName();
 
-
         List<JavaFileMethod> methodList = new ArrayList<>();
         //save
         JavaFileMethod save = new JavaFileMethod();
-        save.returnType("int").method(saveName()).params(modelName + " " + PluginUtils.lowerFirst(modelName));
+        save.returnType("int").method(saveName()).params(modelName + " " + PluginUtils.lowerFirst(modelName)).access(null);
 
 
         //update
         JavaFileMethod update = new JavaFileMethod();
-        update.returnType("boolean").method(updateName()).params(modelName + " " + PluginUtils.lowerFirst(modelName));
+        update.returnType("boolean").method(updateName()).params(modelName + " " + PluginUtils.lowerFirst(modelName)).access(null);
 
 
         //delete
         JavaFileMethod delete = new JavaFileMethod();
-        delete.returnType("boolean").method(deleteName()).params(primaryParams);
+        delete.returnType("boolean").method(deleteName()).params(primaryParams).access(null);
 
         //get
         JavaFileMethod get = new JavaFileMethod();
-        get.returnType(modelName).method(getName()).params(primaryParams);
+        get.returnType(modelName).method(getName()).params(primaryParams).access(null);
 
         //getAll
         JavaFileMethod getAll = new JavaFileMethod();
-        getAll.returnType("List<" + modelName + ">").method(getAllName());
+        getAll.returnType("List<" + modelName + ">").method(getAllName()).access(null);
 
         methodList.add(save);
         methodList.add(update);
@@ -166,7 +179,7 @@ public class MybatisDaoGenerator extends JavaGenerator {
 
             //list
             JavaFileMethod getList = new JavaFileMethod();
-            getList.returnType("List<" + modelName + ">").method(getListName()).params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
+            getList.returnType("List<" + modelName + ">").method(getListName()).params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List").anno(null);
 
             methodList.add(getList);
 
@@ -174,7 +187,8 @@ public class MybatisDaoGenerator extends JavaGenerator {
                 tableInfo.getTableIndexList().stream().filter(tableIndex -> !(tableIndex.isUnique() && tableIndex.getColumnInfoList().size() == 1))
                         .forEach(tableIndex -> methodList.add(new JavaFileMethod().returnType(tableIndex.getReturnType(modelName))
                                 .method(tableIndex.getMethod())
-                                .params(tableIndex.getParams())
+                                .params(tableIndex.getParams(true))
+                                .access(null)
                         ));
             }
         }
@@ -226,7 +240,7 @@ public class MybatisDaoGenerator extends JavaGenerator {
     public void aroundFile(Around around, JavaFile javaFile, StringBuilder sb) {
         super.aroundFile(around, javaFile, sb);
         if (around == Around.after && isBase) {
-            new MapperGenerator(configInfo, tableInfo).generator();
+            new MapperGenerator(configInfo, tableInfo).generator(MapperGenerator.PARENT).generator(MapperGenerator.CHILD);
         }
     }
 }

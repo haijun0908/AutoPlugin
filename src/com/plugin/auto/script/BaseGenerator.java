@@ -8,7 +8,7 @@ import java.util.List;
 public abstract class BaseGenerator {
 
     protected DatabaseConfigInfo configInfo;
-    private List<TableInfo> tableInfoList;
+    protected List<TableInfo> tableInfoList;
 
     protected TableInfo currentTable;
 

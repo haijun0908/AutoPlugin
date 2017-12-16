@@ -54,10 +54,12 @@ public class TableRightMenu {
         if (menuItem.getGenerator() != null || menuItem == RightMenuItem.ALL) {
             try {
                 if (menuItem != RightMenuItem.ALL) {
-                    Class clazz = menuItem.getGenerator();
-                    Constructor c = clazz.getConstructor(DatabaseConfigInfo.class, List.class);
-                    BaseGenerator p = (BaseGenerator) c.newInstance(configInfo, tableInfoList);
-                    p.startGeneratorList();
+                    Class[] clazzArr = menuItem.getGenerator();
+                    for (Class clazz : clazzArr) {
+                        Constructor c = clazz.getConstructor(DatabaseConfigInfo.class, List.class);
+                        BaseGenerator p = (BaseGenerator) c.newInstance(configInfo, tableInfoList);
+                        p.startGeneratorList();
+                    }
                 } else {
                     for (RightMenuItem item : RightMenuItem.values()) {
                         if (item.getGenerator() != null) {

@@ -21,7 +21,7 @@ public class ColumnInfo {
     }
 
     public String getCustomField() {
-        if(StringUtils.isBlank(customField)){
+        if (StringUtils.isBlank(customField)) {
             return field;
         }
         return customField;
@@ -71,13 +71,38 @@ public class ColumnInfo {
         this.comment = comment;
     }
 
-    public String lowerField(){
-        return PluginUtils.javaName(this.field , false);
+    public String lowerField() {
+        return PluginUtils.javaName(this.field, false);
     }
-    public String upperField(){
-        return PluginUtils.javaName(this.field , true);
+
+    public String upperField() {
+        return PluginUtils.javaName(this.field, true);
     }
-    public String showParam(){
-        return PluginUtils.reg(this).type + " " + lowerField();
+
+    public String showParam(boolean isDao) {
+        String type = PluginUtils.reg(this).type;
+        if ("Date".equals(type) || "Time".equals(type)) {
+            return (isDao ? ("@Param(\"begin" + upperField() + "\") ") : "") + type + " begin" + upperField() + ", " + ((isDao ? ("@Param(\"end" + upperField() + "\") ") : "") + type + " end" + upperField());
+        } else {
+            return (isDao ? ("@Param(\"" + lowerField() + "\") ") : "") + type + " " + lowerField();
+        }
+    }
+
+    public String getSql() {
+        String type = PluginUtils.reg(this).type;
+        if ("Date".equals(type) || "Time".equals(type)) {
+            return this.field + " &gt;= #{begin" + upperField() + "} AND " + this.field + " &lt;= #{end" + upperField() + "}";
+        } else {
+            return this.field + " = #{" + lowerField() + "}";
+        }
+    }
+
+    public String getParams() {
+        String type = PluginUtils.reg(this).type;
+        if ("Date".equals(type) || "Time".equals(type)) {
+            return "begin" + upperField() + ", " + "end" + upperField();
+        } else {
+            return lowerField();
+        }
     }
 }

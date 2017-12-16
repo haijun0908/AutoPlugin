@@ -3,9 +3,8 @@ package com.plugin.auto.script.java;
 import com.plugin.auto.info.*;
 import com.plugin.auto.utils.PluginUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -59,8 +58,17 @@ public class ServiceGenerator extends JavaGenerator {
         List<String> importList = new ArrayList<>();
 
         importList.addAll(PluginUtils.getImportList(tableInfo.getPrimaryColumns()));
+        if (tableInfo.getTableIndexList() != null && tableInfo.getTableIndexList().size() > 0) {
+            tableInfo.getTableIndexList().stream()
+                    .map(tableIndex -> PluginUtils.getImportList(tableIndex.getColumnInfoList()))
+                    .forEach(importList::addAll);
+        }
         importList.add("java.util.List");
         importList.add("java.util.Map");
+
+        HashSet<String> h = new HashSet<>(importList);
+        importList.clear();
+        importList.addAll(h);
 
         importList.add("");
 
@@ -75,7 +83,7 @@ public class ServiceGenerator extends JavaGenerator {
             serviceGenerator.resetCurrentTime(SERVICE, tableInfo);
             importList.add(serviceGenerator.getFullName());
 
-            MybatisDaoGenerator daoGenerator = new MybatisDaoGenerator(configInfo, Arrays.asList(tableInfo));
+            MybatisDaoGenerator daoGenerator = new MybatisDaoGenerator(configInfo, Collections.singletonList(tableInfo));
             daoGenerator.resetCurrentTime(MybatisDaoGenerator.CHILD, tableInfo);
             importList.add(daoGenerator.getFullName());
 
@@ -84,8 +92,6 @@ public class ServiceGenerator extends JavaGenerator {
 
             importList.add("org.springframework.stereotype.Service");
             importList.add("org.springframework.beans.factory.annotation.Autowired");
-
-        } else {
 
         }
 
@@ -266,10 +272,10 @@ public class ServiceGenerator extends JavaGenerator {
                     .forEach(tableIndex -> {
                         JavaFileMethod method = new JavaFileMethod().returnType(tableIndex.getReturnType(dtoName))
                                 .method(tableIndex.getMethod())
-                                .params(tableIndex.getParams());
+                                .params(tableIndex.getParams(false));
                         if (isImpl) {
                             method.body("return " + convertGenerator.getJavaName() + ".convert" + (tableIndex.isUnique() ? "" : "2List") + "(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + method.getMethod() + "(" +
-                                    tableIndex.getColumnInfoList().stream().map(ColumnInfo::lowerField).collect(Collectors.joining(", ")) + "), " + dtoGenerator.getFileName() + ".class);")
+                                    tableIndex.getColumnInfoList().stream().map(ColumnInfo::getParams).collect(Collectors.joining(", ")) + "), " + dtoGenerator.getFileName() + ".class);")
                                     .anno("Override");
                         }
                         methodList.add(method);

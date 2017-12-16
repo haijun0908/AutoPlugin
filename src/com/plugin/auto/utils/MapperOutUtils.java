@@ -1,20 +1,29 @@
 package com.plugin.auto.utils;
 
 import com.google.gson.*;
-import com.intellij.openapi.util.io.FileUtil;
-import com.plugin.auto.info.mapper.MapperBase;
-import com.plugin.auto.info.mapper.MapperXml;
+import com.plugin.auto.info.xml.mapper.MapperBase;
+import com.plugin.auto.info.xml.mapper.MapperXml;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 
-public class MapperOutUtils {
+public class MapperOutUtils extends FileOut<MapperXml> {
     private MapperXml mapperXml;
-    private StringBuilder sb = new StringBuilder();
+
+    @Override
+    boolean canOverwrite() {
+        return mapperXml.isCanOverwrite();
+    }
+
+    @Override
+    File getWriteFile() {
+        return new File(mapperXml.getFilePath() + File.separator + mapperXml.getFileName() + ".xml");
+    }
+
 
     public MapperOutUtils(MapperXml mapperXml) {
+        super(mapperXml);
         this.mapperXml = mapperXml;
     }
 
@@ -35,74 +44,47 @@ public class MapperOutUtils {
         }).create();
     }
 
-    public void write() {
-        try {
-            append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
-                    "<!DOCTYPE mapper\n" +
-                    "        PUBLIC \"-//mybatis.org//DTD Mapper 3.0//EN\"\n" +
-                    "        \"http://mybatis.org/dtd/mybatis-3-mapper.dtd\">");
+    @Override
+    StringBuilder getFileContent() {
+        append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
+                "<!DOCTYPE "+mapperXml.getRoot()+"\n" +
+                "        PUBLIC "+mapperXml.getDtd()+">");
+        appendLine();
+        append("<"+mapperXml.getRoot()+" namespace=\"" + mapperXml.getNamespace() + "\">");
+
+        for (MapperBase mapperBase : mapperXml.getElementList()) {
+            JsonObject json = gson.toJsonTree(mapperBase).getAsJsonObject();
             appendLine();
-            append("<mapper namespace=\"" + mapperXml.getNamespace() + "\">");
-
-            for (MapperBase mapperBase : mapperXml.getElementList()) {
-                JsonObject json = gson.toJsonTree(mapperBase).getAsJsonObject();
-                appendLine();
-                String element = "<" + mapperBase.element() + " id=\"" + mapperBase.getId() + "\"";
-                Iterator keys = json.entrySet().iterator();
-                while (keys.hasNext()) {
-                    Map.Entry<String, JsonElement> entry = (Map.Entry<String, JsonElement>) keys.next();
-                    element += " " + entry.getKey() + "=\"" + entry.getValue().getAsString() + "\"";
-                }
-
-
-                append(element + ">", 1);
-
-                //node
-                if (mapperBase.getNodeList() != null && mapperBase.getNodeList().size() > 0) {
-                    mapperBase.getNodeList().forEach(node -> {
-                        String s = "<" + node.getNode();
-                        for (int i = 0; i < node.getKeys().size(); i++) {
-                            s += " " + node.getKeys().get(i) + "=" + "\"" + node.getValues().get(i) + "\"";
-                        }
-                        s += "/>";
-                        append(s , 2);
-                    });
-                }
-
-                append(mapperBase.getValue(), 2);
-                append("</" + mapperBase.element() + ">", 1);
+            String element = "<" + mapperBase.element() + " id=\"" + mapperBase.getId() + "\"";
+            Iterator keys = json.entrySet().iterator();
+            while (keys.hasNext()) {
+                Map.Entry<String, JsonElement> entry = (Map.Entry<String, JsonElement>) keys.next();
+                element += " " + entry.getKey() + "=\"" + entry.getValue().getAsString() + "\"";
             }
 
-            appendLine();
 
+            append(element + ">", 1);
 
-            append("</mapper>");
+            //node
+            if (mapperBase.getNodeList() != null && mapperBase.getNodeList().size() > 0) {
+                mapperBase.getNodeList().forEach(node -> {
+                    String s = "<" + node.getNode();
+                    for (int i = 0; i < node.getKeys().size(); i++) {
+                        s += " " + node.getKeys().get(i) + "=" + "\"" + node.getValues().get(i) + "\"";
+                    }
+                    s += "/>";
+                    append(s, 2);
+                });
+            }
 
-            FileUtil.writeToFile(new File(mapperXml.getFilePath() + File.separator + mapperXml.getFileName() + ".xml"), sb.toString());
-        } catch (IOException e) {
-            e.printStackTrace();
+            append(mapperBase.getValue(), 2);
+            append("</" + mapperBase.element() + ">", 1);
         }
+
+        appendLine();
+        append("</"+mapperXml.getRoot()+">");
+
+        return sb;
     }
 
-    private void append(String content) {
-        append(content, 0);
-    }
-
-    private void appendLine() {
-        append("");
-    }
-
-
-    private void append(String content, int tabCount) {
-        if(content == null)
-            return;
-        String[] lines = content.split("\n");
-        String tab = "";
-        for (int i = 0; i < tabCount; i++) {
-            tab += "    ";
-        }
-        for (String line : lines) {
-            sb.append(tab).append(line).append("\n");
-        }
-    }
 }

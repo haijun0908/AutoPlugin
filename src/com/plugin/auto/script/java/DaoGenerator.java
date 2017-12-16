@@ -107,7 +107,7 @@ public class DaoGenerator extends JavaGenerator {
         super.aroundFile(around, javaFile, sb);
         if (around == Around.after && isBase) {
             //dao结束后需要生成mapper
-            new MapperGenerator(configInfo, tableInfo).generator();
+//            new MapperGenerator(configInfo, tableInfo).generator();
         }
     }
 

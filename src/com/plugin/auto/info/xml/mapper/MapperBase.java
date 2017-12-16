@@ -1,4 +1,4 @@
-package com.plugin.auto.info.mapper;
+package com.plugin.auto.info.xml.mapper;
 
 import com.google.gson.annotations.Expose;
 

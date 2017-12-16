@@ -1,35 +1,33 @@
 package com.plugin.auto.common;
 
+import com.plugin.auto.info.xml.MybatisConfigXml;
 import com.plugin.auto.script.BaseGenerator;
-import com.plugin.auto.script.java.DtoGenerator;
-import com.plugin.auto.script.java.ModelGenerator;
-import com.plugin.auto.script.java.MybatisDaoGenerator;
-import com.plugin.auto.script.java.ServiceGenerator;
+import com.plugin.auto.script.java.*;
 
 public enum RightMenuItem {
 
     ALL("ALL", "", null),
     NULL("-----------", "", null),
     MODEL("Model", "", ModelGenerator.class),
-    DAO("Dao", "", MybatisDaoGenerator.class),
+    DAO("Dao", "", MybatisDaoGenerator.class , MybatisConfigGenerator.class),
     SERVICE("Service", "", ServiceGenerator.class),
     DTO("Dto", "", DtoGenerator.class);
 
     private String item;
     private String icon;
-    private Class<? extends BaseGenerator> generator;
+    private Class<? extends BaseGenerator>[] generator;
 
-    RightMenuItem(String item, String icon, Class<? extends BaseGenerator> generator) {
+    RightMenuItem(String item, String icon, Class<? extends BaseGenerator>... generator) {
         this.item = item;
         this.icon = icon;
         this.generator = generator;
     }
 
-    public Class<? extends BaseGenerator> getGenerator() {
+    public Class<? extends BaseGenerator>[] getGenerator() {
         return generator;
     }
 
-    public void setGenerator(Class<? extends BaseGenerator> generator) {
+    public void setGenerator(Class<? extends BaseGenerator>[] generator) {
         this.generator = generator;
     }
 

@@ -47,8 +47,8 @@ public class TableIndex {
         return null;
     }
 
-    public String getParams() {
-        return columnInfoList.stream().map(ColumnInfo::showParam).collect(Collectors.joining(", "));
+    public String getParams(boolean isDao) {
+        return columnInfoList.stream().map(columnInfo -> columnInfo.showParam(isDao)).collect(Collectors.joining(", "));
     }
 
 }

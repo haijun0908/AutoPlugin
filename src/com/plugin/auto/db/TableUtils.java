@@ -110,9 +110,9 @@ public class TableUtils {
     public void fillTableIndex(TableInfo tableInfo) {
 
         //todo test
-        if (!tableInfo.getTableName().startsWith("cc_")) {
-            return;
-        }
+//        if (!tableInfo.getTableName().startsWith("cc_")) {
+//            return;
+//        }
 
 
         String sql = "show INDEX from " + tableInfo.getTableName();

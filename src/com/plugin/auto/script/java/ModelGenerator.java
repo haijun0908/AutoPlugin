@@ -64,7 +64,7 @@ public class ModelGenerator extends JavaGenerator {
 
     @Override
     protected String getFileComment() {
-        return null;
+        return tableInfo.getComment();
     }
 
     @Override
@@ -101,6 +101,7 @@ public class ModelGenerator extends JavaGenerator {
     protected String getAnno() {
         return null;
     }
+
 
 
 

@@ -2,37 +2,18 @@ package com.plugin.auto.info;
 
 import java.util.List;
 
-public class JavaFile {
-    private String writeFilePath;
-    private String fileName;
+public class JavaFile extends FileInfo {
     private String packagePath;
     private List<String> importList;
     private boolean isAbstract = false;
     private String fileComment;
     private FileType fileType;
     private String anno;
-    private boolean canOverwrite = true;
 
     private String parentClass;
     private List<String> implClassList;
     private List<JavaFileField> fieldList;
     private List<JavaFileMethod> methodList;
-
-    public String getWriteFilePath() {
-        return writeFilePath;
-    }
-
-    public void setWriteFilePath(String writeFilePath) {
-        this.writeFilePath = writeFilePath;
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
 
     public String getPackagePath() {
         return packagePath;
@@ -114,20 +95,14 @@ public class JavaFile {
         this.anno = anno;
     }
 
-    public boolean isCanOverwrite() {
-        return canOverwrite;
-    }
 
-    public void setCanOverwrite(boolean canOverwrite) {
-        this.canOverwrite = canOverwrite;
-    }
-
-    public static enum FileType {
+    public enum FileType {
         CLASS("class"),
         INTERFACE("interface");
 
         private String fileType;
-        FileType(String fileType){
+
+        FileType(String fileType) {
             this.fileType = fileType;
         }
 
