@@ -47,10 +47,10 @@ public class MapperOutUtils extends FileOut<MapperXml> {
     @Override
     StringBuilder getFileContent() {
         append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n" +
-                "<!DOCTYPE "+mapperXml.getRoot()+"\n" +
-                "        PUBLIC "+mapperXml.getDtd()+">");
+                "<!DOCTYPE " + mapperXml.getRoot() + "\n" +
+                "        PUBLIC " + mapperXml.getDtd() + ">");
         appendLine();
-        append("<"+mapperXml.getRoot()+" namespace=\"" + mapperXml.getNamespace() + "\">");
+        append("<" + mapperXml.getRoot() + " namespace=\"" + mapperXml.getNamespace() + "\">");
 
         for (MapperBase mapperBase : mapperXml.getElementList()) {
             JsonObject json = gson.toJsonTree(mapperBase).getAsJsonObject();
@@ -82,7 +82,7 @@ public class MapperOutUtils extends FileOut<MapperXml> {
         }
 
         appendLine();
-        append("</"+mapperXml.getRoot()+">");
+        append("</" + mapperXml.getRoot() + ">");
 
         return sb;
     }

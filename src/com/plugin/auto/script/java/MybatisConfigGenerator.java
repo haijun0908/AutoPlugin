@@ -9,11 +9,10 @@ import com.plugin.auto.utils.XmlOut;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MybatisConfigGenerator extends BaseGenerator{
+public class MybatisConfigGenerator extends BaseGenerator {
 
     public MybatisConfigGenerator(DatabaseConfigInfo configInfo, List<TableInfo> tableInfoList) {
         super(configInfo, tableInfoList);
