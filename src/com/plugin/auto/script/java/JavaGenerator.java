@@ -46,7 +46,9 @@ public abstract class JavaGenerator extends BaseGenerator implements WriteJavaFi
 
     protected abstract List<JavaFileMethod> getMethodList();
 
-    protected abstract String getSubPackage();
+    protected abstract String getPackagePath();
+
+    protected abstract String getFilePath();
 
     protected abstract String getAnno();
 
@@ -56,9 +58,9 @@ public abstract class JavaGenerator extends BaseGenerator implements WriteJavaFi
         for (int i = 0; i < times; i++) {
             resetCurrentTime(i + 1, currentTable);
             JavaFile file = new JavaFile();
-            file.setFilePath(configInfo.getWriteFilePath());
+            file.setFilePath(getFilePath());
             file.setFileName(getFileName());
-            file.setPackagePath(configInfo.getPackagePath() + "." + getSubPackage());
+            file.setPackagePath(getPackagePath());
             file.setImportList(getImportList());
             file.setAbstract(isAbstract());
             file.setFileComment(getFileComment());
@@ -80,7 +82,7 @@ public abstract class JavaGenerator extends BaseGenerator implements WriteJavaFi
     }
 
     public String getFullName() {
-        return this.configInfo.getPackagePath() + "." + this.getSubPackage() + "." + this.getFileName();
+        return getPackagePath() + "." + this.getFileName();
     }
 
     @Override

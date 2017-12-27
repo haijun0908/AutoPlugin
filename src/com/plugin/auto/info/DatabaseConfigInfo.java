@@ -28,6 +28,79 @@ public class DatabaseConfigInfo implements Serializable {
     private String writeFilePath;
     private String resourcePath;
 
+    private String dtoPackage;
+    private String dtoFilePath;
+    private String modelPackage;
+    private String modelFilePath;
+    private String servicePackage;
+    private String serviceFilePath;
+    private String daoPackage;
+    private String daoFilePath;
+
+    public String getDtoPackage() {
+        return dtoPackage;
+    }
+
+    public void setDtoPackage(String dtoPackage) {
+        this.dtoPackage = dtoPackage;
+    }
+
+    public String getDtoFilePath() {
+        return dtoFilePath;
+    }
+
+    public void setDtoFilePath(String dtoFilePath) {
+        this.dtoFilePath = dtoFilePath;
+    }
+
+    public String getModelPackage() {
+        return modelPackage;
+    }
+
+    public void setModelPackage(String modelPackage) {
+        this.modelPackage = modelPackage;
+    }
+
+    public String getModelFilePath() {
+        return modelFilePath;
+    }
+
+    public void setModelFilePath(String modelFilePath) {
+        this.modelFilePath = modelFilePath;
+    }
+
+    public String getServicePackage() {
+        return servicePackage;
+    }
+
+    public void setServicePackage(String servicePackage) {
+        this.servicePackage = servicePackage;
+    }
+
+    public String getServiceFilePath() {
+        return serviceFilePath;
+    }
+
+    public void setServiceFilePath(String serviceFilePath) {
+        this.serviceFilePath = serviceFilePath;
+    }
+
+    public String getDaoPackage() {
+        return daoPackage;
+    }
+
+    public void setDaoPackage(String daoPackage) {
+        this.daoPackage = daoPackage;
+    }
+
+    public String getDaoFilePath() {
+        return daoFilePath;
+    }
+
+    public void setDaoFilePath(String daoFilePath) {
+        this.daoFilePath = daoFilePath;
+    }
+
     public String getResourcePath() {
         return resourcePath;
     }
@@ -116,8 +189,6 @@ public class DatabaseConfigInfo implements Serializable {
                 for (DatabaseConfigInfo info : databaseConfigInfos) {
                     list.add(info);
                 }
-
-
             }
         }
         return list;

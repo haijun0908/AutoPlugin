@@ -93,8 +93,13 @@ public class ModelGenerator extends JavaGenerator {
     }
 
     @Override
-    protected String getSubPackage() {
-        return "model";
+    protected String getFilePath() {
+        return configInfo.getModelFilePath();
+    }
+
+    @Override
+    protected String getPackagePath() {
+        return configInfo.getModelPackage();
     }
 
     @Override

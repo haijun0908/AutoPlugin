@@ -123,9 +123,15 @@ public class DtoGenerator extends JavaGenerator {
         return methodList;
     }
 
+
     @Override
-    protected String getSubPackage() {
-        return "dto" + (isBase ? ".base" : "");
+    protected String getFilePath() {
+        return configInfo.getDtoFilePath();
+    }
+
+    @Override
+    protected String getPackagePath() {
+        return configInfo.getDtoPackage() + (isBase ? ".base" : "");
     }
 
     @Override

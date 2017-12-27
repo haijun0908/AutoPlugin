@@ -198,8 +198,13 @@ public class MybatisDaoGenerator extends JavaGenerator {
 
 
     @Override
-    protected String getSubPackage() {
-        return "dao" + (isBase ? ".base" : "");
+    protected String getPackagePath() {
+        return configInfo.getDaoPackage() + (isBase ? ".base" : "");
+    }
+
+    @Override
+    protected String getFilePath() {
+        return configInfo.getDaoFilePath();
     }
 
     @Override

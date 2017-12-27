@@ -295,8 +295,13 @@ public class ServiceGenerator extends JavaGenerator {
     }
 
     @Override
-    protected String getSubPackage() {
-        return "service" + (isImpl ? ".impl" : "");
+    protected String getPackagePath() {
+        return configInfo.getServicePackage() + (isImpl ? ".impl" : "");
+    }
+
+    @Override
+    protected String getFilePath() {
+        return configInfo.getServiceFilePath();
     }
 
     @Override
