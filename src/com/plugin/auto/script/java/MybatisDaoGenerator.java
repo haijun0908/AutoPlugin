@@ -179,7 +179,9 @@ public class MybatisDaoGenerator extends JavaGenerator {
 
             //list
             JavaFileMethod getList = new JavaFileMethod();
-            getList.returnType("List<" + modelName + ">").method(getListName()).params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List").anno(null);
+            getList.returnType("List<" + modelName + ">").method(getListName()).params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List")
+                    .anno(null)
+                    .access(null);
 
             methodList.add(getList);
 

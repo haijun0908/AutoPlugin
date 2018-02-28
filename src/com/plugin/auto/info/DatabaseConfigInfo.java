@@ -6,7 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * 数据库信息对象
@@ -186,9 +188,7 @@ public class DatabaseConfigInfo implements Serializable {
         if (StringUtils.isNotBlank(s)) {
             DatabaseConfigInfo[] databaseConfigInfos = new Gson().fromJson(s, DatabaseConfigInfo[].class);
             if (databaseConfigInfos != null || databaseConfigInfos.length > 0) {
-                for (DatabaseConfigInfo info : databaseConfigInfos) {
-                    list.add(info);
-                }
+                Collections.addAll(list, databaseConfigInfos);
             }
         }
         return list;
@@ -200,5 +200,9 @@ public class DatabaseConfigInfo implements Serializable {
         } else {
             PropertiesComponent.getInstance().unsetValue(CACHE_KEY);
         }
+    }
+
+    public static DatabaseConfigInfo getInfoByName(DatabaseConfigInfo configInfo) {
+        return getExistList().stream().filter(databaseConfigInfo -> databaseConfigInfo.getName().equals(configInfo.getName())).findFirst().orElse(configInfo);
     }
 }

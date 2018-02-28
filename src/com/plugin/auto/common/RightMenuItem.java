@@ -1,6 +1,5 @@
 package com.plugin.auto.common;
 
-import com.plugin.auto.info.xml.MybatisConfigXml;
 import com.plugin.auto.script.BaseGenerator;
 import com.plugin.auto.script.java.*;
 

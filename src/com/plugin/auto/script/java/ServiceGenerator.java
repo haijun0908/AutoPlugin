@@ -306,7 +306,7 @@ public class ServiceGenerator extends JavaGenerator {
 
     @Override
     protected String getAnno() {
-        return isImpl ? "Service" : null;
+        return isImpl ? "Service\n@com.alibaba.dubbo.config.annotation.Service" : null;
     }
 
     @Override

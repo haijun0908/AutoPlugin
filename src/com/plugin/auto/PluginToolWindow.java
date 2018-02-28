@@ -195,6 +195,8 @@ public class PluginToolWindow implements ToolWindowFactory {
             tableUtils.getTables().get(selectRow).setTableName(name);
             selectTable.add(tableUtils.getTables().get(selectRow));
         }
+        //有可能在点击之前修改了链接配置 重新从缓存中根据name再次获取
+        selectConfigInfo = DatabaseConfigInfo.getInfoByName(selectConfigInfo);
         new TableRightMenu(selectConfigInfo, selectTable, table1, e.getX(), e.getY());
     }
 
