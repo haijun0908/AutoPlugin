@@ -74,9 +74,10 @@ public class ServiceGenerator extends JavaGenerator {
 
 
         importList.add(dtoGenerator.getFullName());
-        importList.add(modelGenerator.getFullName());
+
 
         if (isImpl) {
+            importList.add(modelGenerator.getFullName());
             importList.add("javax.annotation.Resource");
             importList.add("java.util.HashMap");
             ServiceGenerator serviceGenerator = new ServiceGenerator(configInfo, null);
@@ -185,7 +186,12 @@ public class ServiceGenerator extends JavaGenerator {
         List<JavaFileMethod> methodList = new ArrayList<>();
         //save
         JavaFileMethod save = new JavaFileMethod();
-        save.returnType("boolean").method("save" + javaName).params(dtoName + " " + PluginUtils.lowerFirst(dtoName));
+        String saveReturnType = "boolean";
+        if (tableInfo.getPrimaryColumns().size() == 1 && tableInfo.getPrimaryColumns().get(0).isAutoIncrement()) {
+            //只有1个主键 并且自增
+            saveReturnType = PluginUtils.reg(tableInfo.getPrimaryColumns().get(0)).type;
+        }
+        save.returnType(saveReturnType).method("save" + javaName).params(dtoName + " " + PluginUtils.lowerFirst(dtoName));
         if (isImpl) {
             String body = modelGenerator.getFileName() + " model = " + dto2Model() + ";\n";
             body += "int rows = " + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.saveName() + "(model);\n";
@@ -194,7 +200,11 @@ public class ServiceGenerator extends JavaGenerator {
                 body += "    " + PluginUtils.lowerFirst(dtoName) + ".set" + PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getField(), true) + "(model.get" + PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getField(), true) + "());\n";
                 body += "}\n";
             }
-            body += "return rows > 0;";
+            if (saveReturnType.equals("boolean")) {
+                body += "return rows > 0;";
+            } else {
+                body += "return model.get" + PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getField(), true) + "();";
+            }
             save.body(body)
                     .anno("Override");
         }
@@ -296,12 +306,12 @@ public class ServiceGenerator extends JavaGenerator {
 
     @Override
     protected String getPackagePath() {
-        return configInfo.getServicePackage() + (isImpl ? ".impl" : "");
+        return (isImpl ? configInfo.getServiceImplPackage() : configInfo.getServicePackage()) + (isImpl ? ".impl" : "");
     }
 
     @Override
     protected String getFilePath() {
-        return configInfo.getServiceFilePath();
+        return isImpl ? configInfo.getServiceImplFilePath() : configInfo.getServiceFilePath();
     }
 
     @Override

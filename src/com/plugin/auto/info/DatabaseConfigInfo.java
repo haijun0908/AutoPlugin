@@ -36,6 +36,8 @@ public class DatabaseConfigInfo implements Serializable {
     private String modelFilePath;
     private String servicePackage;
     private String serviceFilePath;
+    private String serviceImplPackage;
+    private String serviceImplFilePath;
     private String daoPackage;
     private String daoFilePath;
 
@@ -181,6 +183,21 @@ public class DatabaseConfigInfo implements Serializable {
         return "mysql://" + host + ":" + port + "/" + db;
     }
 
+    public String getServiceImplPackage() {
+        return serviceImplPackage;
+    }
+
+    public void setServiceImplPackage(String serviceImplPackage) {
+        this.serviceImplPackage = serviceImplPackage;
+    }
+
+    public String getServiceImplFilePath() {
+        return serviceImplFilePath;
+    }
+
+    public void setServiceImplFilePath(String serviceImplFilePath) {
+        this.serviceImplFilePath = serviceImplFilePath;
+    }
 
     public static List<DatabaseConfigInfo> getExistList() {
         List<DatabaseConfigInfo> list = new ArrayList<>();

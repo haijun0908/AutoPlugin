@@ -1,4 +1,3 @@
-package com.bookingtee.core.utils;
 
 import org.springframework.beans.BeanUtils;
 

@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>AutoPlugin</id>
     <name>AutoPlugin</name>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <vendor email="haijun0908@gmail.com">None</vendor>
 
     <description><![CDATA[
@@ -9,7 +9,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-
+1.fix overwrite error.
     ]]>
     </change-notes>
 

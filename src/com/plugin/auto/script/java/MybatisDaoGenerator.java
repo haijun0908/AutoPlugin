@@ -100,7 +100,10 @@ public class MybatisDaoGenerator extends JavaGenerator {
             DaoGenerator dao = new DaoGenerator(configInfo, null);
             dao.resetCurrentTime(PARENT, tableInfo);
             importList.add(dao.getFullName());
+
+            importList.add("org.apache.ibatis.annotations.Mapper");
         }
+
 
 
         return importList;
@@ -211,7 +214,7 @@ public class MybatisDaoGenerator extends JavaGenerator {
 
     @Override
     protected String getAnno() {
-        return null;
+        return isBase ? null : "Mapper";
     }
 
 

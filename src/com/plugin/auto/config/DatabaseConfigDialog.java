@@ -50,6 +50,9 @@ public class DatabaseConfigDialog extends DialogWrapper {
     private JButton serviceOpen;
     private JTextField servicePackage;
     private JTabbedPane tabbedPane1;
+    private JButton serviceImplOpen;
+    private JLabel serviceImplFolder;
+    private JTextField serviceImplPackage;
 
     private DatabaseConfigInfo configInfo;
     private DialogConfirmCallback<DatabaseConfigInfo> callback;
@@ -87,6 +90,8 @@ public class DatabaseConfigDialog extends DialogWrapper {
             servicePackage.setText(configInfo.getServicePackage());
             daoFolder.setText(configInfo.getDaoFilePath());
             daoPackage.setText(configInfo.getDaoPackage());
+            serviceImplFolder.setText(configInfo.getServiceImplFilePath());
+            serviceImplPackage.setText(configInfo.getServiceImplPackage());
         }
     }
 
@@ -118,6 +123,7 @@ public class DatabaseConfigDialog extends DialogWrapper {
         daoOpen.addActionListener(new OpenBtnListener(daoOpen  , daoFolder));
         modelOpen.addActionListener(new OpenBtnListener(modelOpen  , modelFolder));
         serviceOpen.addActionListener(new OpenBtnListener(serviceOpen  , serviceFolder));
+        serviceImplOpen.addActionListener(new OpenBtnListener(serviceImplOpen , serviceImplFolder));
 
         // call onCancel() on ESCAPE
         contentPane.registerKeyboardAction(e -> onCancel(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -192,6 +198,17 @@ public class DatabaseConfigDialog extends DialogWrapper {
             configInfo.setServicePackage(packageName.getText() + ".service");
         }else{
             configInfo.setServicePackage(servicePackage.getText());
+        }
+
+        if(StringUtils.isBlank(serviceImplFolder.getText())){
+            configInfo.setServiceImplFilePath(folder.getText());
+        }else{
+            configInfo.setServiceImplFilePath(serviceImplFolder.getText());
+        }
+        if(StringUtils.isBlank(serviceImplPackage.getText())){
+            configInfo.setServiceImplPackage(packageName.getText() + ".service");
+        }else{
+            configInfo.setServiceImplPackage(serviceImplPackage.getText());
         }
 
 
