@@ -2,7 +2,7 @@ package com.plugin.auto.utils;
 
 import com.plugin.auto.info.ColumnInfo;
 import org.apache.commons.lang3.StringUtils;
-import org.ini4j.Reg;
+
 
 import java.util.ArrayList;
 import java.util.List;
