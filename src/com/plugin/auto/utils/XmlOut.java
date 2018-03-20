@@ -19,7 +19,7 @@ public class XmlOut extends FileOut<XmlInfo> {
     }
 
     @Override
-    File getWriteFile() {
+    public File getWriteFile() {
         return new File(xmlInfo.getFilePath(), "mybatis-config.xml");
     }
 

@@ -79,4 +79,10 @@ public class Node {
         }
         return "";
     }
+
+    @Override
+    public String toString() {
+        return ("<" + getNode() + getAttributeValues() + ((getSubNodeList() != null && getSubNodeList().size() > 0) ? "" : "/") + ">");
+
+    }
 }

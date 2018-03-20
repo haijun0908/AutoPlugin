@@ -43,9 +43,9 @@ public abstract class FileOut<T> {
             if (file.exists() && file.isFile() && !canOverwrite()) {
                 //不允许覆盖
                 //同时比较2者文件是否一致
-//                if (!(content.toString().trim().equals(readToString(file).trim()))) {
+                if (!(content.toString().equals(com.plugin.auto.utils.FileUtils.readToString(file)))) {
                     FileUtil.copy(file, new File(file.getParentFile() + File.separator + file.getName() + "." + getTime()));
-//                }
+                }
             }
             FileUtil.writeToFile(file, content.toString());
             if (writeFileListener != null) {
@@ -91,27 +91,7 @@ public abstract class FileOut<T> {
     }
 
 
-    public String readToString(File file) {
-        String encoding = "UTF-8";
-        Long filelength = file.length();
-        byte[] filecontent = new byte[filelength.intValue()];
-        try {
-            FileInputStream in = new FileInputStream(file);
-            in.read(filecontent);
-            in.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            return new String(filecontent, encoding);
-        } catch (UnsupportedEncodingException e) {
-            System.err.println("The OS does not support " + encoding);
-            e.printStackTrace();
-            return null;
-        }
-    }
+
 
     public static void main(String[] args){
         System.out.println(File.separator);
