@@ -26,7 +26,8 @@ public class JavaFileOut extends FileOut<JavaFile> {
 
     @Override
     File getWriteFile() {
-        File basePath = new File(javaFile.getFilePath() + File.separator + javaFile.getPackagePath().replaceAll("[.]", File.separator));
+        File basePath = new File(javaFile.getFilePath() + File.separator +
+                org.apache.commons.lang.StringUtils.replace(javaFile.getPackagePath(),".", File.separator));
         return new File(basePath, javaFile.getFileName() + ".java");
     }
 

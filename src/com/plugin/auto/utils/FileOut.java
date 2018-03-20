@@ -3,6 +3,8 @@ package com.plugin.auto.utils;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.xml.actions.xmlbeans.FileUtils;
 import com.plugin.auto.common.WriteFileListener;
+import org.sqlite.util.StringUtils;
+import sun.applet.Main;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -58,7 +60,7 @@ public abstract class FileOut<T> {
 
     private String getTime() {
         Date d = new Date();
-        return new SimpleDateFormat("HH:mm:ss").format(d);
+        return new SimpleDateFormat("HH_mm_ss").format(d);
     }
 
     public FileOut setWriteFileListener(WriteFileListener<T> writeFileListener) {
@@ -109,5 +111,10 @@ public abstract class FileOut<T> {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static void main(String[] args){
+        System.out.println(File.separator);
+        System.out.println(org.apache.commons.lang.StringUtils.replace("D:.安装环境的软件.scrt安装包", ".", File.separator));
     }
 }

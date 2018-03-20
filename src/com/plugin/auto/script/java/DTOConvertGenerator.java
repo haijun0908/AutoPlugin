@@ -18,7 +18,13 @@ public class DTOConvertGenerator {
     public void generator() {
         try {
             InputStream is = getClass().getResourceAsStream("/DtoConvert.txt");
-            File file = new File(filePath + File.separator + packageName.replaceAll("[.]", File.separator) + File.separator + "utils");
+
+            File file = new File(filePath
+                            + File.separator
+                            + org.apache.commons.lang.StringUtils.replace(packageName,".", File.separator)
+                            + File.separator + "utils");
+
+
             file.mkdirs();
             byte[] b = new byte[is.available()];
             is.read(b);
