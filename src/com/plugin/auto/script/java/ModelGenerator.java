@@ -32,14 +32,14 @@ public class ModelGenerator extends JavaGenerator {
         for (ColumnInfo info : tableInfo.getColumnInfoList()) {
             PluginUtils.Reg reg = PluginUtils.reg(info);
             //field
-            fieldList.add(new JavaFileField().comment(info.getComment()).field(info.getField()).type(reg.type).access(JavaAccess.PRIVATE));
+            fieldList.add(new JavaFileField().comment(info.getComment()).field(PluginUtils.javaName(info.getField(), false)).type(reg.type).access(JavaAccess.PRIVATE));
             //setMethod
             methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("void").method("set" + PluginUtils.javaName(info.getField(), true))
-                    .params(reg.type + " " + info.getField()).body("this." + info.getField() + " = " + info.getField() + ";")
+                    .params(reg.type + " " + PluginUtils.javaName(info.getField(), false)).body("this." + PluginUtils.javaName(info.getField(), false) + " = " + PluginUtils.javaName(info.getField(), false) + ";")
             );
             //getMethod
             methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType(reg.type).method("get" + PluginUtils.javaName(info.getField(), true))
-                    .body("return this." + info.getField() + ";")
+                    .body("return this." + PluginUtils.javaName(info.getCustomField(), false) + ";")
             );
         }
     }
@@ -99,7 +99,7 @@ public class ModelGenerator extends JavaGenerator {
 
     @Override
     protected String getPackagePath() {
-        return configInfo.getModelPackage();
+        return configInfo.getModelPackage() + tableInfo.getFirstSubPackage();
     }
 
     @Override

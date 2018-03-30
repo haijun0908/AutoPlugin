@@ -49,14 +49,14 @@ public class DtoGenerator extends JavaGenerator {
             for (ColumnInfo info : tableInfo.getColumnInfoList()) {
                 PluginUtils.Reg reg = PluginUtils.reg(info);
                 //field
-                fieldList.add(new JavaFileField().comment(info.getComment()).field(info.getField()).type(reg.type).access(JavaAccess.PRIVATE));
+                fieldList.add(new JavaFileField().comment(info.getComment()).field(PluginUtils.javaName(info.getCustomField(), false)).type(reg.type).access(JavaAccess.PRIVATE));
                 //setMethod
                 methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("void").method("set" + PluginUtils.javaName(info.getCustomField(), true))
-                        .params(reg.type + " " + info.getField()).body("this." + info.getField() + " = " + info.getField() + ";")
+                        .params(reg.type + " " + info.getField()).body("this." + PluginUtils.javaName(info.getCustomField(), false) + " = " + PluginUtils.javaName(info.getCustomField(), false)+ ";")
                 );
                 //getMethod
                 methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType(reg.type).method("get" + PluginUtils.javaName(info.getCustomField(), true))
-                        .body("return this." + info.getField() + ";")
+                        .body("return this." + PluginUtils.javaName(info.getCustomField(), false) + ";")
                 );
                 toStringBody += "sb.append(\"" + (isFirst ? "" : ",") + " " + PluginUtils.javaName(info.getCustomField(), false) + "=\").append(" + PluginUtils.javaName(info.getCustomField(), false) + ");\n";
                 isFirst = false;
@@ -131,7 +131,7 @@ public class DtoGenerator extends JavaGenerator {
 
     @Override
     protected String getPackagePath() {
-        return configInfo.getDtoPackage() + (isBase ? ".base" : "");
+        return configInfo.getDtoPackage() + (isBase ? ".base" : "") + tableInfo.getFirstSubPackage();
     }
 
     @Override

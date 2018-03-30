@@ -250,18 +250,18 @@ public class ServiceGenerator extends JavaGenerator {
 
             //list
             JavaFileMethod getList = new JavaFileMethod();
-            getList.returnType("List<" + dtoName + ">").method("get" + javaName + "List").params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
+            getList.returnType("List<" + dtoName + ">").method("get" + javaName + "List").params("List<" + primaryReg.packageName + "> " + PluginUtils.javaName(primaryList.get(0).getField(),false) + "List");
             if (isImpl) {
-                getList.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getListName() + "(" + primaryList.get(0).getField() + "List), " + dtoGenerator.getFileName() + ".class);")
+                getList.body("return " + convertGenerator.getJavaName() + ".convert2List(" + PluginUtils.lowerFirst(daoGenerator.getFileName()) + "." + daoGenerator.getListName() + "(" + PluginUtils.javaName(primaryList.get(0).getField(),false) + "List), " + dtoGenerator.getFileName() + ".class);")
                         .anno("Override");
             }
 
             //map
             JavaFileMethod map = new JavaFileMethod();
             map.returnType("Map<" + primaryReg.packageName + ", " + dtoName + ">").method("get" + javaName + "MapBy" + primaryKey)
-                    .params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List");
+                    .params("List<" + primaryReg.packageName + "> " + PluginUtils.javaName(primaryList.get(0).getField(),false) + "List");
             if (isImpl) {
-                String body = "List<" + dtoName + "> list = get" + javaName + "List(" + primaryList.get(0).getField() + "List);" + "\n" +
+                String body = "List<" + dtoName + "> list = get" + javaName + "List(" + PluginUtils.javaName(primaryList.get(0).getField(),false) + "List);" + "\n" +
                         "    if (list != null && list.size() > 0) {" + "\n" +
                         "        Map<" + primaryReg.packageName + ", " + dtoName + "> map = new HashMap<>();" + "\n" +
                         "        for (" + dtoName + " dto : list) {" + "\n" +
@@ -306,7 +306,7 @@ public class ServiceGenerator extends JavaGenerator {
 
     @Override
     protected String getPackagePath() {
-        return (isImpl ? configInfo.getServiceImplPackage() : configInfo.getServicePackage()) + (isImpl ? ".impl" : "");
+        return (isImpl ? configInfo.getServiceImplPackage() : configInfo.getServicePackage()) + (isImpl ? ".impl" : "") + tableInfo.getFirstSubPackage();
     }
 
     @Override

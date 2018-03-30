@@ -4,15 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TableInfo {
-    /**表明**/
+    /**
+     * 表明
+     **/
     private String tableName;
-    /**字段**/
+    /**
+     * 字段
+     **/
     private List<ColumnInfo> columnInfoList;
-    /**注释**/
+    /**
+     * 注释
+     **/
     private String comment;
-    /**原始的表名**/
+    /**
+     * 原始的表名
+     **/
     private String originTableName;
-    /**表索引**/
+    /**
+     * 表索引
+     **/
     private List<TableIndex> tableIndexList;
 
     public List<TableIndex> getTableIndexList() {
@@ -75,5 +85,20 @@ public class TableInfo {
         return columnInfoList.stream().filter(ColumnInfo::isAutoIncrement).findFirst().orElse(null);
     }
 
+    /**
+     * 获取_前缀
+     * eg:
+     * test_plugin
+     * 返回.test
+     *
+     * @return
+     */
+    public String getFirstSubPackage() {
+        if (originTableName.indexOf("_") > -1) {
+            return "." + originTableName.substring(0, originTableName.indexOf("_"));
+        } else {
+            return "";
+        }
+    }
 
 }

@@ -6,6 +6,7 @@ import com.plugin.auto.info.DatabaseConfigInfo;
 import com.plugin.auto.info.TableInfo;
 import com.plugin.auto.info.xml.mapper.*;
 import com.plugin.auto.utils.MapperOutUtils;
+import com.plugin.auto.utils.PluginUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class MapperGenerator {
 
         if (isBase) {
             elementList.add(new MapperSql().id("table").value(tableInfo.getOriginTableName()));
-            elementList.add(new MapperSql().id("fields").value(getAllFieldStr(false, false)));
+            elementList.add(new MapperSql().id("fields").value(getAllFieldStr(false, false , true)));
         } else {
             elementList.add(new MapperSql().id("table").value("<include refid=\"" + getDaoGenerator(true).getFullName() + ".table\"/>"));
             elementList.add(new MapperSql().id("fields").value("<include refid=\"" + getDaoGenerator(true).getFullName() + ".fields\"/>"));
@@ -57,11 +58,11 @@ public class MapperGenerator {
         if (isBase) {
             List<Node> nodeList = new ArrayList<>();
             if (tableInfo.getAutoIncrementColumn() != null) {
-                nodeList.add(new ResultMapNode("id").column(tableInfo.getAutoIncrementColumn().getField()).property(tableInfo.getAutoIncrementColumn().getCustomField()));
+                nodeList.add(new ResultMapNode("id").column(tableInfo.getAutoIncrementColumn().getField()).property(PluginUtils.javaName(tableInfo.getAutoIncrementColumn().getCustomField() , false)));
             }
             nodeList.addAll(tableInfo.getColumnInfoList().stream()
                     .filter(columnInfo -> !columnInfo.isAutoIncrement())
-                    .map(columnInfo -> new ResultMapNode("result").column(columnInfo.getField()).property(columnInfo.getCustomField()))
+                    .map(columnInfo -> new ResultMapNode("result").column(columnInfo.getField()).property(PluginUtils.javaName(columnInfo.getCustomField() , false)))
                     .collect(Collectors.toList()));
             resultMap.nodeList(nodeList);
         } else {
@@ -80,8 +81,8 @@ public class MapperGenerator {
                         .keyColumn(tableInfo.getAutoIncrementColumn().getField());
             }
             save.id(getDaoGenerator(isBase).saveName())
-                    .value("INSERT INTO " + getTable() + " (" + getAllFieldStr(true, false) + ") " +
-                            "VALUES (" + getAllFieldStr(true, false, "#{", "}", ",") + ")")
+                    .value("INSERT INTO " + getTable() + " (" + getAllFieldStr(true, false , true) + ") " +
+                            "VALUES (" + getAllFieldStr(true, false, "#{", "}", ","  ,false) + ")")
             ;
             elementList.add(save);
 
@@ -92,10 +93,10 @@ public class MapperGenerator {
                     .id(getDaoGenerator(isBase).updateName())
                     .value("UPDATE " + getTable() + " set " +
                             tableInfo.getColumnInfoList().stream().filter(columnInfo -> !columnInfo.isPrimaryKey())
-                                    .map(columnInfo -> columnInfo.getField() + "=#{" + columnInfo.getCustomField() + "}")
+                                    .map(columnInfo -> columnInfo.getField() + "=#{" + PluginUtils.javaName(columnInfo.getCustomField(),false) + "}")
                                     .collect(Collectors.joining(","))
                             + " where "
-                            + tableInfo.getPrimaryColumns().stream().map(columnInfo -> columnInfo.getField() + "=#{" + columnInfo.getCustomField() + "}")
+                            + tableInfo.getPrimaryColumns().stream().map(columnInfo -> columnInfo.getField() + "=#{" + PluginUtils.javaName(columnInfo.getCustomField() , false) + "}")
                             .collect(Collectors.joining(","))
                     );
             elementList.add(update);
@@ -104,7 +105,7 @@ public class MapperGenerator {
             MapperDelete delete = new MapperDelete();
             delete.id(getDaoGenerator(isBase).deleteName())
                     .value("DELETE FROM " + getTable() + " WHERE "
-                            + tableInfo.getPrimaryColumns().stream().map(columnInfo -> columnInfo.getField() + "=#{" + columnInfo.getCustomField() + "}")
+                            + tableInfo.getPrimaryColumns().stream().map(columnInfo -> columnInfo.getField() + "=#{" + PluginUtils.javaName(columnInfo.getCustomField(),false) + "}")
                             .collect(Collectors.joining(","))
                     );
             elementList.add(delete);
@@ -115,7 +116,7 @@ public class MapperGenerator {
             get.resultMap("model")
                     .id(getDaoGenerator(isBase).getName())
                     .value("SELECT " + getFields() + " FROM " + getTable() + " WHERE "
-                            + tableInfo.getPrimaryColumns().stream().map(columnInfo -> columnInfo.getField() + "=#{" + columnInfo.getCustomField() + "}")
+                            + tableInfo.getPrimaryColumns().stream().map(columnInfo -> columnInfo.getField() + "=#{" + PluginUtils.javaName(columnInfo.getCustomField(),false) + "}")
                             .collect(Collectors.joining(","))
                     );
             elementList.add(get);
@@ -169,14 +170,14 @@ public class MapperGenerator {
         return this;
     }
 
-    private String getAllFieldStr(boolean skipAutoIncrementKey, boolean skipPrimaryKey, String before, String after, String delimiter) {
+    private String getAllFieldStr(boolean skipAutoIncrementKey, boolean skipPrimaryKey, String before, String after, String delimiter , boolean isSql) {
         return tableInfo.getColumnInfoList().stream()
                 .filter(columnInfo -> !(skipAutoIncrementKey && columnInfo.isAutoIncrement()) && !(skipPrimaryKey && columnInfo.isPrimaryKey()))
-                .map(columnInfo -> before + columnInfo.getCustomField() + after).collect(Collectors.joining(delimiter));
+                .map(columnInfo -> before + (isSql ? columnInfo.getCustomField() : PluginUtils.javaName(columnInfo.getCustomField(),false)) + after).collect(Collectors.joining(delimiter));
     }
 
-    private String getAllFieldStr(boolean skipAutoIncrementKey, boolean skipPrimaryKey) {
-        return getAllFieldStr(skipAutoIncrementKey, skipPrimaryKey, "", "", ",");
+    private String getAllFieldStr(boolean skipAutoIncrementKey, boolean skipPrimaryKey , boolean isSql) {
+        return getAllFieldStr(skipAutoIncrementKey, skipPrimaryKey, "", "", "," , isSql);
     }
 
     private String getTable() {

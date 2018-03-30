@@ -94,7 +94,7 @@ public class DaoGenerator extends JavaGenerator {
 
     @Override
     protected String getPackagePath() {
-        return configInfo.getDaoPackage() + (isBase ? ".base" : "");
+        return configInfo.getDaoPackage() + (isBase ? ".base" : "") + tableInfo.getFirstSubPackage();
     }
 
     @Override

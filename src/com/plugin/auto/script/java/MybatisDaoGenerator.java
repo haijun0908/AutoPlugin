@@ -182,7 +182,7 @@ public class MybatisDaoGenerator extends JavaGenerator {
 
             //list
             JavaFileMethod getList = new JavaFileMethod();
-            getList.returnType("List<" + modelName + ">").method(getListName()).params("List<" + primaryReg.packageName + "> " + primaryList.get(0).getField() + "List")
+            getList.returnType("List<" + modelName + ">").method(getListName()).params("List<" + primaryReg.packageName + "> " + PluginUtils.javaName(primaryList.get(0).getField(),false) + "List")
                     .anno(null)
                     .access(null);
 
@@ -204,7 +204,7 @@ public class MybatisDaoGenerator extends JavaGenerator {
 
     @Override
     protected String getPackagePath() {
-        return configInfo.getDaoPackage() + (isBase ? ".base" : "");
+        return configInfo.getDaoPackage() + (isBase ? ".base" : "") + tableInfo.getFirstSubPackage();
     }
 
     @Override
