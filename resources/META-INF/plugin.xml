@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>AutoPlugin</id>
     <name>AutoPlugin</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <vendor email="haijun0908@gmail.com">None</vendor>
 
     <description><![CDATA[
@@ -9,7 +9,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
-1.fix overwrite error.
+    v1.0.2:
+        1:fix db field contains '_' bug;
+        2:substring tablename by '_' and get first string as sub package
+
+    v1.0.1:
+        1.fix overwrite error.
     ]]>
     </change-notes>
 
