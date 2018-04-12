@@ -10,6 +10,9 @@ public class DtoConvert {
     }
 
     public static <T> T convert(Object val, Class<T> clazz) {
+        if (val == null) {
+            return null;
+        }
         Object t = null;
         try {
             t = clazz.newInstance();
