@@ -10,16 +10,16 @@
 
     <change-notes><![CDATA[
     v1.0.3:
-        1:add support database columnType 'bigint' , convert database column type 'bigint' to java type 'long';
-        2:no longer overwrite the 'dto' files;
-        3:fix 'dto' files bug when the column contains the char '_'
-
-    v1.0.2:
-        1:fix db field contains '_' bug;
-        2:substring tablename by '_' and get first string as sub package
-
-    v1.0.1:
-        1.fix overwrite error.
+        1:add support database columnType 'bigint' , convert database column type 'bigint' to java type 'long';<br/>
+        2:no longer overwrite the 'dto' files;<br/>
+        3:fix 'dto' files bug when the column contains the char '_'<br/>
+<br/>
+    v1.0.2:<br/>
+        1:fix db field contains '_' bug;<br/>
+        2:substring tablename by '_' and get first string as sub package<br/>
+<br/>
+    v1.0.1:<br/>
+        1.fix overwrite error.<br/>
     ]]>
     </change-notes>
 
