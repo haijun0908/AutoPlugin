@@ -1,9 +1,11 @@
 package com.plugin.auto.script.java;
 
+import com.plugin.auto.common.WriteFileType;
 import com.plugin.auto.common.WriteJavaFileListener;
 import com.plugin.auto.info.*;
 import com.plugin.auto.script.BaseGenerator;
 import com.plugin.auto.utils.JavaFileOut;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import java.util.List;
 
@@ -70,16 +72,17 @@ public abstract class JavaGenerator extends BaseGenerator implements WriteJavaFi
             file.setFieldList(getFieldList());
             file.setMethodList(getMethodList());
             file.setAnno(getAnno());
-            file.setCanOverwrite(getCanOverwrite());
+            file.setWriteFileType(getWriteFileType());
 
             new JavaFileOut(file).setListener(this).writeFile();
 
         }
     }
 
-    protected boolean getCanOverwrite() {
-        return true;
+    protected WriteFileType getWriteFileType() {
+        return WriteFileType.NEW;
     }
+
 
     public String getFullName() {
         return getPackagePath() + "." + this.getFileName();

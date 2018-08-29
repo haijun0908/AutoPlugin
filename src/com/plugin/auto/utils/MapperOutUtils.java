@@ -1,6 +1,7 @@
 package com.plugin.auto.utils;
 
 import com.google.gson.*;
+import com.plugin.auto.common.WriteFileType;
 import com.plugin.auto.info.xml.mapper.MapperBase;
 import com.plugin.auto.info.xml.mapper.MapperXml;
 
@@ -12,8 +13,8 @@ public class MapperOutUtils extends FileOut<MapperXml> {
     private MapperXml mapperXml;
 
     @Override
-    boolean canOverwrite() {
-        return mapperXml.isCanOverwrite();
+    WriteFileType getWriteFileType() {
+        return mapperXml.getWriteFileType();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.plugin.auto.utils;
 
+import com.plugin.auto.common.WriteFileType;
 import com.plugin.auto.common.WriteJavaFileListener;
 import com.plugin.auto.info.JavaFile;
 import com.plugin.auto.info.JavaFileField;
@@ -20,8 +21,8 @@ public class JavaFileOut extends FileOut<JavaFile> {
     }
 
     @Override
-    boolean canOverwrite() {
-        return javaFile.isCanOverwrite();
+    WriteFileType getWriteFileType() {
+        return javaFile.getWriteFileType();
     }
 
     @Override

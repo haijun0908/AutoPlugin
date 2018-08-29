@@ -1,14 +1,19 @@
 <idea-plugin>
     <id>AutoPlugin</id>
     <name>AutoPlugin</name>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <vendor email="haijun0908@gmail.com">None</vendor>
 
     <description><![CDATA[
-
+        only support mysql
     ]]></description>
 
     <change-notes><![CDATA[
+    v1.0.3:
+        1:add support database columnType 'bigint' , convert database column type 'bigint' to java type 'long';
+        2:no longer overwrite the 'dto' files;
+        3:fix 'dto' files bug when the column contains the char '_'
+
     v1.0.2:
         1:fix db field contains '_' bug;
         2:substring tablename by '_' and get first string as sub package

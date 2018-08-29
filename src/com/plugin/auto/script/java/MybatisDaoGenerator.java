@@ -1,5 +1,6 @@
 package com.plugin.auto.script.java;
 
+import com.plugin.auto.common.WriteFileType;
 import com.plugin.auto.common.WriteJavaFileListener;
 import com.plugin.auto.info.*;
 import com.plugin.auto.utils.PluginUtils;
@@ -252,5 +253,10 @@ public class MybatisDaoGenerator extends JavaGenerator {
         if (around == Around.after && isBase) {
             new MapperGenerator(configInfo, tableInfo).generator(MapperGenerator.PARENT).generator(MapperGenerator.CHILD);
         }
+    }
+
+    @Override
+    protected WriteFileType getWriteFileType() {
+        return isBase ? WriteFileType.NEW : WriteFileType.OLD;
     }
 }

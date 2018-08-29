@@ -1,5 +1,6 @@
 package com.plugin.auto.script.java;
 
+import com.plugin.auto.common.WriteFileType;
 import com.plugin.auto.info.*;
 import com.plugin.auto.utils.PluginUtils;
 
@@ -36,15 +37,7 @@ public class DtoGenerator extends JavaGenerator {
         if (isBase) {
             fieldList.add(new JavaFileField().access(JavaAccess.PRIVATE).type("long").field("serialVersionUID").defaultVal("-1L").modifier("static final"));
 
-
-//            sb.append("id=").append(id);
-//            sb.append(", name='").append(name).append('\'');
-//            sb.append(", createTime=").append(createTime);
-//            sb.append(", updateTime=").append(updateTime);
-//            sb.append(", memberId=").append(memberId);
-//            sb.append('}');
-//            return sb.toString();
-            String toStringBody = "StringBuffer sb = new StringBuffer(\"" + getFileName() + "{\");\n";
+            String toStringBody = "StringBuilder sb = new StringBuilder(\"" + getFileName() + "{\");\n";
             boolean isFirst = true;
             for (ColumnInfo info : tableInfo.getColumnInfoList()) {
                 PluginUtils.Reg reg = PluginUtils.reg(info);
@@ -52,7 +45,7 @@ public class DtoGenerator extends JavaGenerator {
                 fieldList.add(new JavaFileField().comment(info.getComment()).field(PluginUtils.javaName(info.getCustomField(), false)).type(reg.type).access(JavaAccess.PRIVATE));
                 //setMethod
                 methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("void").method("set" + PluginUtils.javaName(info.getCustomField(), true))
-                        .params(reg.type + " " + info.getField()).body("this." + PluginUtils.javaName(info.getCustomField(), false) + " = " + PluginUtils.javaName(info.getCustomField(), false)+ ";")
+                        .params(reg.type + " " + PluginUtils.javaName(info.getField(), false)).body("this." + PluginUtils.javaName(info.getCustomField(), false) + " = " + PluginUtils.javaName(info.getCustomField(), false)+ ";")
                 );
                 //getMethod
                 methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType(reg.type).method("get" + PluginUtils.javaName(info.getCustomField(), true))
@@ -140,7 +133,7 @@ public class DtoGenerator extends JavaGenerator {
     }
 
     @Override
-    protected boolean getCanOverwrite() {
-        return isBase ? true : false;
+    protected WriteFileType getWriteFileType() {
+        return isBase ? WriteFileType.NEW : WriteFileType.OLD;
     }
 }

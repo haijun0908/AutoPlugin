@@ -1,5 +1,6 @@
 package com.plugin.auto.utils;
 
+import com.plugin.auto.common.WriteFileType;
 import com.plugin.auto.info.xml.XmlInfo;
 import com.plugin.auto.info.xml.mapper.Node;
 
@@ -14,8 +15,8 @@ public class XmlOut extends FileOut<XmlInfo> {
     }
 
     @Override
-    boolean canOverwrite() {
-        return false;
+    WriteFileType getWriteFileType() {
+        return WriteFileType.NEW;
     }
 
     @Override

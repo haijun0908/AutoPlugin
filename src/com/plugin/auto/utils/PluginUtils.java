@@ -15,6 +15,7 @@ public class PluginUtils {
     private static List<Reg> regList = new ArrayList<>();
 
     static {
+        regList.add(new Reg("bigint","long","","Long"));
         regList.add(new Reg("int", "int", "", "Integer"));
         regList.add(new Reg("float|double|decimal|real", "double", "", "Double"));
         regList.add(new Reg("datetime|timestamp", "Date", "java.util.Date", "Date"));
@@ -67,6 +68,17 @@ public class PluginUtils {
             this.type = type;
             this.importClass = importClass;
             this.packageName = packageName;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("Reg{");
+            sb.append("reg='").append(reg).append('\'');
+            sb.append(", type='").append(type).append('\'');
+            sb.append(", importClass='").append(importClass).append('\'');
+            sb.append(", packageName='").append(packageName).append('\'');
+            sb.append('}');
+            return sb.toString();
         }
     }
 

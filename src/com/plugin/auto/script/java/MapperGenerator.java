@@ -1,6 +1,7 @@
 package com.plugin.auto.script.java;
 
 import com.plugin.auto.common.WriteFileListener;
+import com.plugin.auto.common.WriteFileType;
 import com.plugin.auto.info.ColumnInfo;
 import com.plugin.auto.info.DatabaseConfigInfo;
 import com.plugin.auto.info.TableInfo;
@@ -164,7 +165,7 @@ public class MapperGenerator {
 
         mapper.fileName(getDaoGenerator(isBase).getFileName());
         mapper.filePath(configInfo.getResourcePath() + File.separator + "mapper" + (isBase ? (File.separator + "base") : ""));
-        mapper.canOverwrite(isBase ? true : false);
+        mapper.setWriteFileType(isBase ? WriteFileType.NEW : WriteFileType.BOTH_NEW);
         new MapperOutUtils(mapper).writeFile();
 
         return this;

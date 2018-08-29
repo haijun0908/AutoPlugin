@@ -1,16 +1,19 @@
 package com.plugin.auto.info;
 
+import com.plugin.auto.common.WriteFileType;
+
 public class FileInfo {
-    private boolean canOverwrite;
+    private WriteFileType writeFileType;
     private String filePath;
     private String fileName;
 
-    public boolean isCanOverwrite() {
-        return canOverwrite;
+
+    public WriteFileType getWriteFileType() {
+        return writeFileType;
     }
 
-    public void setCanOverwrite(boolean canOverwrite) {
-        this.canOverwrite = canOverwrite;
+    public void setWriteFileType(WriteFileType writeFileType) {
+        this.writeFileType = writeFileType;
     }
 
     public String getFilePath() {
@@ -29,8 +32,8 @@ public class FileInfo {
         this.fileName = fileName;
     }
 
-    public FileInfo canOverwrite(boolean canOverwrite) {
-        this.canOverwrite = canOverwrite;
+    public FileInfo writeFileType(WriteFileType writeFileType) {
+        this.writeFileType = writeFileType;
         return this;
     }
 

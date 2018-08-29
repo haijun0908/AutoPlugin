@@ -1,5 +1,6 @@
 package com.plugin.auto.script.java;
 
+import com.plugin.auto.common.WriteFileType;
 import com.plugin.auto.common.WriteJavaFileListener;
 import com.plugin.auto.info.*;
 import com.plugin.auto.utils.PluginUtils;
@@ -117,7 +118,8 @@ public class DaoGenerator extends JavaGenerator {
     }
 
     @Override
-    protected boolean getCanOverwrite() {
-        return false;
+    protected WriteFileType getWriteFileType() {
+        return WriteFileType.BOTH_NEW;
     }
+
 }
