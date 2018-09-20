@@ -60,7 +60,7 @@ public class JavaFileField {
         }
         code += this.type + " " + this.field;
 
-        if (StringUtils.isNotBlank(this.defaultVal)) {
+        if (defaultVal != null) {
             code += " = " + this.defaultVal;
         }
         code += ";";

@@ -85,6 +85,7 @@ public class TableUtils {
                     info.setType(rs.getString("DATA_TYPE"));
                     info.setDefaultVal(rs.getObject("COLUMN_DEFAULT"));
                     info.setAutoIncrement("auto_increment".equals(rs.getString("EXTRA")));
+                    info.setOnUpdateCurrentTime("on update CURRENT_TIMESTAMP".equals(rs.getString("EXTRA")));
                     info.setCustomField(info.getField());
                     columnInfoList.add(info);
 

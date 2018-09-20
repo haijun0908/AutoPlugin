@@ -10,7 +10,16 @@ public class ColumnInfo {
     private Object defaultVal;
     private String comment;
     private boolean isAutoIncrement;
+    private boolean onUpdateCurrentTime = false;
     private String customField;
+
+    public boolean isOnUpdateCurrentTime() {
+        return onUpdateCurrentTime;
+    }
+
+    public void setOnUpdateCurrentTime(boolean onUpdateCurrentTime) {
+        this.onUpdateCurrentTime = onUpdateCurrentTime;
+    }
 
     public boolean isAutoIncrement() {
         return isAutoIncrement;

@@ -1,5 +1,6 @@
 package com.plugin.auto.script.java;
 
+import com.intellij.javaee.module.view.common.editor.FacetAsVirtualFile;
 import com.plugin.auto.info.*;
 import com.plugin.auto.utils.PluginUtils;
 
@@ -31,8 +32,17 @@ public class ModelGenerator extends JavaGenerator {
         fieldList.add(new JavaFileField().access(JavaAccess.PRIVATE).type("long").field("serialVersionUID").defaultVal("-1L").modifier("static final"));
         for (ColumnInfo info : tableInfo.getColumnInfoList()) {
             PluginUtils.Reg reg = PluginUtils.reg(info);
+            if(reg == null){
+                throw new RuntimeException("can't parse the columnType '"+info.getType()+"' which table is '"+tableInfo.getOriginTableName()+"'");
+            }
             //field
-            fieldList.add(new JavaFileField().comment(info.getComment()).field(PluginUtils.javaName(info.getField(), false)).type(reg.type).access(JavaAccess.PRIVATE));
+            fieldList.add(new JavaFileField()
+                    .comment(info.getComment())
+                    .field(PluginUtils.javaName(info.getField(), false))
+                    .type(reg.type)
+                    .access(JavaAccess.PRIVATE)
+                    .defaultVal(getDefaultValue(info,reg, false))
+            );
             //setMethod
             methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("void").method("set" + PluginUtils.javaName(info.getField(), true))
                     .params(reg.type + " " + PluginUtils.javaName(info.getField(), false)).body("this." + PluginUtils.javaName(info.getField(), false) + " = " + PluginUtils.javaName(info.getField(), false) + ";")

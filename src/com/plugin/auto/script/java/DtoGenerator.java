@@ -42,7 +42,13 @@ public class DtoGenerator extends JavaGenerator {
             for (ColumnInfo info : tableInfo.getColumnInfoList()) {
                 PluginUtils.Reg reg = PluginUtils.reg(info);
                 //field
-                fieldList.add(new JavaFileField().comment(info.getComment()).field(PluginUtils.javaName(info.getCustomField(), false)).type(reg.type).access(JavaAccess.PRIVATE));
+                fieldList.add(new JavaFileField()
+                        .comment(info.getComment())
+                        .field(PluginUtils.javaName(info.getCustomField(), false))
+                        .type(reg.type)
+                        .access(JavaAccess.PRIVATE)
+                        .defaultVal(getDefaultValue(info,reg,true))
+                );
                 //setMethod
                 methodList.add(new JavaFileMethod().access(JavaAccess.PUBLIC).returnType("void").method("set" + PluginUtils.javaName(info.getCustomField(), true))
                         .params(reg.type + " " + PluginUtils.javaName(info.getField(), false)).body("this." + PluginUtils.javaName(info.getCustomField(), false) + " = " + PluginUtils.javaName(info.getCustomField(), false)+ ";")

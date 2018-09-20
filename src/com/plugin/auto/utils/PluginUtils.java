@@ -18,7 +18,8 @@ public class PluginUtils {
         regList.add(new Reg("bigint","long","","Long"));
         regList.add(new Reg("int", "int", "", "Integer"));
         regList.add(new Reg("float|double|decimal|real", "double", "", "Double"));
-        regList.add(new Reg("datetime|timestamp", "Date", "java.util.Date", "Date"));
+        regList.add(new Reg("datetime", "Date", "java.util.Date", "Date"));
+        regList.add(new Reg("timestamp", "Timestamp", "java.sql.Timestamp", "java.sql.Timestamp"));
         regList.add(new Reg("date", "java.sql.Date", "", "java.sql.Date"));
         regList.add(new Reg("time", "java.sql.Time", "", "java.sql.Time"));
         regList.add(new Reg("", "String", "", "String"));
